@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Antibiótico 3D</title>
 <style>
 :root{color-scheme:dark;box-sizing:border-box}
@@ -34,7 +34,9 @@ html,body{height:100%;margin:0;background:#0d0407;overflow:hidden;touch-action:n
 .pn button.up{display:flex;align-items:center;gap:12px;text-align:left}.pn svg{width:48px;height:32px;flex:none}
 .pn{overflow-y:auto;justify-content:safe center}
 #wb{position:fixed;right:calc(22px + env(safe-area-inset-right,0px));bottom:calc(158px + env(safe-area-inset-bottom,0px));padding:10px 16px;border-radius:999px;border:2px solid var(--ac,#ffd23f);background:rgba(13,4,7,.6);color:#f6e6d6;font:600 14px Georgia,serif}
-#ov #sb{background:none;color:#ffd23f}
+#ov #sb,#ov #nb{background:none;color:#ffd23f}
+.pn input{font:600 18px Georgia,serif;padding:11px 14px;width:min(380px,100%);box-sizing:border-box;text-align:center;border:2px solid #f6e6d6;background:#1a0a10;color:#f6e6d6;border-radius:12px}
+button,input{touch-action:manipulation}
 #mu{position:fixed;z-index:1;top:calc(60px + env(safe-area-inset-top,0px));left:14px;width:40px;height:40px;border-radius:50%;border:1px solid #f6e6d6;background:rgba(13,4,7,.6);color:#f6e6d6;font-size:18px}
 </style>
 </head>
@@ -45,8 +47,8 @@ html,body{height:100%;margin:0;background:#0d0407;overflow:hidden;touch-action:n
 <div id="js"><div id="kn"></div></div>
 <button id="fb">Lanzar</button>
 <button id="wb">Jeringa</button>
-<div id="ov"><h1 id="ot">Antibiótico 3D</h1><p id="op">Sobrevive a 10 oleadas de bacterias: cada una trae más y más fuertes. Encadena eliminaciones para multiplicar tu puntuación. Joystick izquierdo para moverte, arrastra el dedo por la pantalla para mirar y pulsa el botón derecho para lanzar antibióticos.</p><button id="ob">Empezar</button><button id="sb">Tienda</button></div>
-<div id="shp" class="pn"></div>
+<div id="ov"><h1 id="ot">Antibiótico 3D</h1><p id="op">Sobrevive a 10 oleadas de bacterias: cada una trae más y más fuertes. Encadena eliminaciones para multiplicar tu puntuación. Joystick izquierdo para moverte, arrastra el dedo por la pantalla para mirar y pulsa el botón derecho para lanzar antibióticos.</p><button id="ob">Empezar</button><button id="sb">Tienda</button><button id="nb">Jugar online</button></div>
+<div id="shp" class="pn"></div><div id="net" class="pn"></div>
 <div id="qz" class="pn"><small id="qc"></small><h2 id="qt"></h2><div id="qa"></div><p id="qf"></p><button id="qn" class="pri" style="display:none">Continue</button></div>
 <button id="mu">♪</button>
 <script>
@@ -58,7 +60,8 @@ const gc=c.createLinearGradient(0,0,0,H/2);gc.addColorStop(0,'#1a0810');gc.addCo
 const gf=c.createLinearGradient(0,H/2,0,H);gf.addColorStop(0,'#0a0405');gf.addColorStop(1,'#3a1210');
 let px,py,pa,hp,foes,shots,cd,hurt,rec,state='menu',jx=0,jy=0,fire=false,total=0;
 const keys={};
-let pts=0,inv=0,hsfx=0,pool=[],wave=1,score=0,best=0,combo=0,ct=0,bn=0,nextW=false,own=[1,0,0],sks=[1,0,0,0,0],wp=0,sk=0;const up={fr:0,pw:0,hp:0,sp:0};
+let pts=0,inv=0,hsfx=0,pool=[],wave=1,score=0,best=0,combo=0,ct=0,bn=0,nextW=false,own=[1,0,0],sks=[1,0,0,0,0],wp=0,sk=0,np=1,mi=0,kills=0,mk=0,ld=0,sa=0,rpv={};
+const rp={},net={on:false,host:false,id:0,hostId:0,pin:'',ps:[],ws:null,brk:false},SP=[[1.5,1.5],[2.5,1.5],[1.5,2.5],[3.5,1.5]];const up={fr:0,pw:0,hp:0,sp:0};
 try{const s=JSON.parse(localStorage.getItem('abx')||'{}');pts=s.pts|0;best=s.best|0;Object.assign(up,s.up||{});if(s.own)own=s.own;if(s.sks)sks=s.sks;wp=s.wp|0;sk=s.sk|0;if(!own[wp])wp=0}catch(e){}
 const save=()=>{try{localStorage.setItem('abx',JSON.stringify({pts,up,best,own,sks,wp,sk}))}catch(e){}};
 const mhp=()=>100+25*up.hp;
@@ -68,44 +71,49 @@ const free=(x,y)=>!(wall((x+.2)|0,(y+.2)|0)||wall((x-.2)|0,(y+.2)|0)||wall((x+.2
 function bfs(sx,sy){const F=M.map(r=>[...r].map(()=>-1));F[sy][sx]=0;const q=[[sx,sy]];
  while(q.length){const [x,y]=q.shift();for(const [ox,oy] of D){const nx=x+ox,ny=y+oy;if(!wall(nx,ny)&&F[ny][nx]<0){F[ny][nx]=F[y][x]+1;q.push([nx,ny])}}}return F}
 function reset(nw){
- px=1.5;py=1.5;pa=0.3;if(nw){wave++;hp=Math.min(mhp(),hp+30)}else{wave=1;score=0;hp=mhp();combo=0}inv=1.5;bn=2.2;renderOg();shots=[];cd=0;hurt=0;rec=0;foes=[];
+ px=SP[mi][0];py=SP[mi][1];pa=0.3;if(nw){wave++;hp=Math.min(mhp(),Math.max(hp,0)+30)}else{wave=1;score=0;hp=mhp();combo=0}inv=1.5;bn=2.2;renderOg();shots=[];cd=0;hurt=0;rec=0;foes=[];
  const F=bfs(1,1),cells=[];
  for(let y=0;y<16;y++)for(let x=0;x<16;x++)if(F[y][x]>=7)cells.push([x,y]);
- cells.sort(()=>Math.random()-.5);
- for(const [x,y] of cells){if(foes.length>=3+wave+Math.max(0,wave-5))break;
-  if(foes.every(f=>Math.hypot(f.x-x-.5,f.y-y-.5)>1.7))foes.push({x:x+.5,y:y+.5,hp:3+(wave>4)+(wave>8),fl:0,s:.7+Math.random()*.4+wave*.06})}
- total=foes.length;state='play';ov.style.display='none';
+ cells.sort(()=>Math.random()-.5);if(net.on&&!net.host)cells.length=0;
+ for(const [x,y] of cells){if(foes.length>=Math.round((3+wave+Math.max(0,wave-5))*(1+.5*(np-1))))break;
+  if(foes.every(f=>Math.hypot(f.x-x-.5,f.y-y-.5)>(np>1?1.1:1.7)))foes.push({x:x+.5,y:y+.5,hp:3+(wave>4)+(wave>8),fl:0,s:.7+Math.random()*.4+wave*.06})}
+ total=foes.length;state='play';ov.style.display='none';qz.style.display='none';
 }
 function shoot(){let a=pa,bd=.35;
  for(const f of foes){const r=Math.atan2(f.y-py,f.x-px);let d=r-pa;d=Math.atan2(Math.sin(d),Math.cos(d));if(Math.abs(d)<bd&&los(f)){bd=Math.abs(d);a=r}}
- shots.push({x:px+Math.cos(a)*.3,y:py+Math.sin(a)*.3,dx:Math.cos(a),dy:Math.sin(a),z:wp,d:(1+up.pw)*WP[wp][2]});cd=WP[wp][1]*(1-.15*up.fr);rec=1;sfx(wp==2?'cannon':'shoot')}
+ const sh={x:px+Math.cos(a)*.3,y:py+Math.sin(a)*.3,dx:Math.cos(a),dy:Math.sin(a),z:wp,d:(1+up.pw)*WP[wp][2],k:sk};if(net.on&&!net.host)tx2({k:'f',s:sh},1);else shots.push(sh);cd=WP[wp][1]*(1-.15*up.fr);rec=1;sfx(wp==2?'cannon':'shoot')}
 function update(dt){
  const ts=v=>Math.abs(v)<.3?0:Math.sign(v)*(Math.abs(v)-.3)/.7,dz=v=>Math.abs(v)<.15?0:v;
- pa+=((keys.ArrowRight?1:0)-(keys.ArrowLeft?1:0))*1.9*dt;const sd=(dz(jx)+(keys.KeyD?1:0)-(keys.KeyA?1:0))*3*(1+.15*up.sp)*dt;
- const m=(-dz(jy)+(keys.ArrowUp||keys.KeyW?1:0)-(keys.ArrowDown||keys.KeyS?1:0))*3*(1+.15*up.sp)*dt;
+ const act=state==='play'?1:0,hostm=!net.on||net.host;
+ pa+=((keys.ArrowRight?1:0)-(keys.ArrowLeft?1:0))*1.9*dt*act;const sd=(dz(jx)+(keys.KeyD?1:0)-(keys.KeyA?1:0))*3*(1+.15*up.sp)*dt*act;
+ const m=(-dz(jy)+(keys.ArrowUp||keys.KeyW?1:0)-(keys.ArrowDown||keys.KeyS?1:0))*3*(1+.15*up.sp)*dt*act;
  const nx=px+Math.cos(pa)*m-Math.sin(pa)*sd,ny=py+Math.sin(pa)*m+Math.cos(pa)*sd;
  if(free(nx,py))px=nx;if(free(px,ny))py=ny;
  cd-=dt;rec=Math.max(0,rec-dt*5);
- if((fire||keys.Space)&&cd<=0)shoot();
+ if(act&&(fire||keys.Space)&&cd<=0)shoot();
+ if(!hostm){hurt=Math.max(0,hurt-dt*1.5);inv-=dt;hsfx-=dt;bn-=dt;if(hp<=0&&state==='play')ask();return}
+ if(net.on)hostSnap(dt);
  for(let i=shots.length-1;i>=0;i--){const s=shots[i];s.x+=s.dx*8*dt;s.y+=s.dy*8*dt;
   if(wall(s.x|0,s.y|0)){shots.splice(i,1);continue}
   for(const f of foes)if(Math.hypot(f.x-s.x,f.y-s.y)<.45){f.hp-=s.d;f.fl=.15;sfx('hit');shots.splice(i,1);break}}
- const n0=foes.length;foes=foes.filter(f=>f.hp>.01);if(foes.length<n0){const k=n0-foes.length;combo=Math.min(5,(ct>0?combo:0)+k);ct=2.5;pts+=k*10;score+=k*10*wave*combo;save();sfx('pop')}ct-=dt;bn-=dt;
- const F=bfs(px|0,py|0);
+ const n0=foes.length;foes=foes.filter(f=>f.hp>.01);if(foes.length<n0){const k=n0-foes.length;combo=Math.min(5,(ct>0?combo:0)+k);ct=2.5;pts+=k*10;kills+=k;score+=k*10*wave*combo;save();sfx('pop')}ct-=dt;bn-=dt;
+ const TG=[];if(state==='play'&&hp>0)TG.push({x:px,y:py,l:1});for(const id in rp)if(rp[id].st==1)TG.push({x:rp[id].x,y:rp[id].y,r:rp[id]});
+ if(net.on&&!TG.length&&state!=='quiz'&&!Object.values(rp).some(r=>r.st==2)){netEnd(0);end('Te han infectado','Las bacterias ganaron esta vez.','Jugar de nuevo');return}
+ TG.forEach(t=>t.F=bfs(t.x|0,t.y|0));
  for(const f of foes){
-  const cx=f.x|0,cy=f.y|0;let bx=cx,by=cy,bd=F[cy][cx];
+  let tg=null,bq=1e9;for(const q of TG){const dd=Math.hypot(f.x-q.x,f.y-q.y);if(dd<bq){bq=dd;tg=q}}if(!tg)continue;const F=tg.F,px=tg.x,py=tg.y;const cx=f.x|0,cy=f.y|0;let bx=cx,by=cy,bd=F[cy][cx];
   for(const [ox,oy] of D){const a=cx+ox,b=cy+oy;if(F[b]?.[a]>=0&&F[b][a]<bd){bd=F[b][a];bx=a;by=b}}
   const tx=bd===0?px:bx+.5,ty=bd===0?py:by+.5,an=Math.atan2(ty-f.y,tx-f.x);
   f.x+=Math.cos(an)*f.s*dt;f.y+=Math.sin(an)*f.s*dt;f.fl=Math.max(0,f.fl-dt);
-  if(inv<=0&&Math.hypot(f.x-px,f.y-py)<.55){hp-=22*dt;hurt=.45;if(hsfx<=0){sfx('hurt');hsfx=.4}}}inv-=dt;hsfx-=dt;
+  for(const q of TG)if(Math.hypot(f.x-q.x,f.y-q.y)<.55){if(q.l){if(inv<=0){hp-=22*dt;hurt=.45;if(hsfx<=0){sfx('hurt');hsfx=.4}}}else if(!q.r.iv)q.r.dm+=22*dt}}inv-=dt;hsfx-=dt;
  hurt=Math.max(0,hurt-dt*1.5);
- if(hp<=0){ask()}
- else if(!foes.length){const b=100*wave+Math.round(hp);score+=b;pts+=25;
- if(wave>=10){pts+=100;score+=1000;end('Infección eliminada','Has superado las 10 oleadas. ¡Ganaste!','Jugar de nuevo')}
+ if(hp<=0&&state==='play'){ask()}
+ else if(!foes.length&&!net.brk&&total>0){const b=100*wave+Math.round(hp);score+=b;pts+=25;
+ if(wave>=10){pts+=100;score+=1000;netEnd(1);end('Infección eliminada','Has superado las 10 oleadas. ¡Ganaste!','Jugar de nuevo')}
  else wavedone(b)}
 }
-function wavedone(b){state='between';save();sfx('win');ot.textContent='Oleada '+wave+' superada';op.textContent='Bonificación +'+b+'. Puntuación: '+score+'. Recuperas algo de vida; gasta tus puntos en la tienda antes de seguir.';ob.textContent='Oleada '+(wave+1);nextW=true;ov.style.display='flex'}
-function end(t,p,b){state='over';nextW=false;if(score>best)best=score;save();sfx(t[0]=='I'?'win':'lose');p+=' Oleada '+wave+'/10. Puntuación: '+score+'. Récord: '+best+'.';ot.textContent=t;op.textContent=p;ob.textContent=b;ov.style.display='flex'}
+function wavedone(b){if(net.on){net.brk=true;state='between';save();sfx('win');tx2({k:'wd'});setTimeout(()=>{net.brk=false;if(!net.on)return;reset(true);tx2({k:'nw',w:wave})},5000);return}state='between';save();sfx('win');ot.textContent='Oleada '+wave+' superada';op.textContent='Bonificación +'+b+'. Puntuación: '+score+'. Recuperas algo de vida; gasta tus puntos en la tienda antes de seguir.';ob.textContent='Oleada '+(wave+1);nextW=true;ov.style.display='flex'}
+function end(t,p,b){state='over';nextW=false;net.brk=false;qz.style.display='none';if(net.on)closeNet();if(score>best)best=score;save();sfx(t[0]=='I'?'win':'lose');p+=' Oleada '+wave+'/10. Puntuación: '+score+'. Récord: '+best+'.';ot.textContent=t;op.textContent=p;ob.textContent=b;ov.style.display='flex'}
 function render(){
  c.fillStyle=gc;c.fillRect(0,0,W,H/2);c.fillStyle=gf;c.fillRect(0,H/2,W,H/2);
  const dx=Math.cos(pa),dy=Math.sin(pa),plx=-dy*PL,ply=dx*PL;
@@ -124,17 +132,18 @@ function render(){
   c.fillStyle=`rgb(${b[0]*k|0},${b[1]*k|0},${b[2]*k|0})`;c.fillRect(i,(H-lh)/2,1,lh);
  }
  const inv=1/(plx*dy-dx*ply),list=[];
- for(const f of foes)list.push({o:f,t:0});for(const s of shots)list.push({o:s,t:1});
+ for(const f of foes)list.push({o:f,t:0});for(const s of shots)list.push({o:s,t:1});for(const q of others())list.push({o:{x:q[0],y:q[1]},t:2,q});
  for(const e of list){const o=e.o,ax=o.x-px,ay=o.y-py;e.tx=inv*(dy*ax-dx*ay);e.ty=inv*(-ply*ax+plx*ay)}
  list.sort((a,b)=>b.ty-a.ty);
  for(const e of list){
   if(e.ty<.15)continue;
-  const sx=(W/2)*(1+e.tx/e.ty),sz=(H/e.ty)*(e.t?(e.o.z==2?.34:e.o.z==1?.12:.2):.7),cy=H/2+(H/e.ty)*(e.t?.05:.18);
+  const sx=(W/2)*(1+e.tx/e.ty),sz=(H/e.ty)*(e.t==2?.55:e.t?(e.o.z==2?.34:e.o.z==1?.12:.2):.7),cy=H/2+(H/e.ty)*(e.t==2?.12:e.t?.05:.18);
   const k=1/(1+e.ty*e.ty*.08);
   for(let x=Math.max(0,Math.floor(sx-sz/2));x<=Math.min(W-1,Math.ceil(sx+sz/2));x++){
    if(e.ty>=zb[x])continue;
-   const u=(x-sx)/(sz/2),h=sz*Math.sqrt(Math.max(0,1-u*u))*(e.t?.6:1);
-   if(e.t){c.fillStyle=u<0?SK[sk][1]:SK[sk][2];c.fillRect(x,cy-h/2,1,h);continue}
+   const u=(x-sx)/(sz/2),h=sz*Math.sqrt(Math.max(0,1-u*u))*(e.t==1?.6:1);
+   if(e.t==2){c.globalAlpha=Math.max(.4,k);c.fillStyle=SK[e.q[2]][1];c.fillRect(x,cy-h/2,1,h);c.fillStyle='#fff';c.fillRect(x,cy-h/2,1,h*.25);if(Math.abs(u)<.5){c.fillStyle='#10202a';c.fillRect(x,cy-h*.3,1,h*.15)}c.globalAlpha=1;continue}
+   if(e.t){c.fillStyle=u<0?SK[e.o.k||0][1]:SK[e.o.k||0][2];c.fillRect(x,cy-h/2,1,h);continue}
    const fl=e.o.fl>0;
    c.fillStyle=fl?'#fff':`rgb(${70*k|0},${190*k|0},${80*k|0})`;c.fillRect(x,cy-h/2,1,h);
    c.fillStyle=fl?'#fff':`rgb(${150*k|0},${240*k|0},${130*k|0})`;c.fillRect(x,cy-h/2,1,h*.3);
@@ -153,7 +162,7 @@ function render(){
 }
 let last=performance.now();
 function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;
- if(state==='play'){update(dt);hpb.style.width=Math.max(0,hp/mhp()*100)+'%';cnt.textContent='Oleada '+wave+'/10\nBacterias '+foes.length+'/'+total+'\nPuntuación '+score+(ct>0&&combo>1?'  x'+combo:'')+'\nTienda '+pts+' pts'}
+ if(state==='play'||(net.on&&net.host&&(state==='quiz'||state==='spec'))){update(dt);hpb.style.width=Math.max(0,hp/mhp()*100)+'%';cnt.textContent='Oleada '+wave+'/10\nBacterias '+foes.length+'/'+total+'\nPuntuación '+score+(ct>0&&combo>1?'  x'+combo:'')+'\nTienda '+pts+' pts'}
  if(wb.dataset.w!=wp){wb.dataset.w=wp;wb.textContent=WP[wp][0].split(' ')[0]}if(px!==undefined)render();requestAnimationFrame(loop)}
 const ov=document.getElementById('ov'),ot=document.getElementById('ot'),op=document.getElementById('op'),ob=document.getElementById('ob');
 const js=document.getElementById('js'),kn=document.getElementById('kn'),fb=document.getElementById('fb'),hpb=document.getElementById('hp'),cnt=document.getElementById('cnt');
@@ -231,7 +240,7 @@ function answer(b,ok){[...qa.children].forEach(x=>{x.disabled=true;if(x.dataset.
  qf.textContent=ok?'Correct! +30 points. You are back in the fight.':'Wrong answer. The right one is in green.';
  if(ok){pts+=30;save()}
  qn.textContent=ok?'Continue':'See result';qn.style.display='';
- qn.onclick=()=>{qz.style.display='none';if(ok){hp=mhp()/2;inv=2.5;hurt=0;state='play'}else end('Te han infectado','Las bacterias ganaron esta vez. Vuelve a intentarlo.','Jugar de nuevo')}}
+ qn.onclick=()=>{qz.style.display='none';if(ok){hp=mhp()/2;inv=2.5;hurt=0;state='play'}else if(net.on)state='spec';else end('Te han infectado','Las bacterias ganaron esta vez. Vuelve a intentarlo.','Jugar de nuevo')}}
 let ac,mg,hb,mon=true,nxt=0,stp=0;
 const mel=[72,0,76,0,79,76,72,0,74,0,77,0,81,77,74,0,72,0,76,0,79,76,72,76,79,77,76,74,72,0,0,0],bass=[48,48,53,53,48,48,55,55];
 function tone(n,t,d,ty,v){const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=440*2**((n-69)/12);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(mg);o.start(t);o.stop(t+d)}
@@ -246,6 +255,75 @@ function startMusic(){if(ac){ac.resume();return}
  nxt=ac.currentTime+.05;ac.resume()}
 mu.onclick=()=>{mon=!mon;if(mg)mg.gain.value=mon?.5:0;mu.textContent=mon?'♪':'✕'};
 addEventListener('pointerdown',startMusic,{once:true});
+const nt=document.getElementById('net'),nb=document.getElementById('nb');
+const wsend=o=>{if(net.ws&&net.ws.readyState===1)net.ws.send(JSON.stringify(o))};
+const tx2=(d,h)=>wsend({t:h?'h':'a',d});
+const netEnd=w=>{if(net.on&&net.host)tx2({k:'end',w,sc:score})};
+function closeNet(){net.on=false;net.host=false;net.pin='';net.ps=[];net.brk=false;np=1;mi=0;rpv={};for(const k in rp)delete rp[k];
+ if(net.ws){net.ws.onclose=null;try{net.ws.close()}catch(e){}net.ws=null}}
+function leaveNet(m){closeNet();nt.style.display='none';qz.style.display='none';foes=[];shots=[];state='menu';ot.textContent='Antibiótico 3D';op.textContent=m;ob.textContent='Empezar';nextW=false;ov.style.display='flex'}
+function netUI(msg){nt.innerHTML='';
+ const add=(tag,txt,cls)=>{const e=document.createElement(tag);e.textContent=txt;if(cls)e.className=cls;nt.appendChild(e);return e};
+ if(!net.pin){add('h2','Jugar online');
+  add('p',msg||'Escribe un PIN de 4 dígitos. Para unirte, el del grupo; para crear uno, el que quieras (vacío = aleatorio).');
+  const i=add('input','');i.placeholder='PIN';i.maxLength=4;i.inputMode='numeric';
+  add('button','Crear grupo (máx. 4 jugadores)','pri').onclick=()=>wsend({t:'create',pin:i.value});
+  add('button','Unirme con PIN').onclick=()=>wsend({t:'join',pin:i.value});
+  const sv=add('input','');sv.placeholder='Servidor (ej. mi-juego.onrender.com)';sv.style.fontSize='14px';try{sv.value=localStorage.getItem('abxs')||''}catch(e){}
+  add('button','Conectar a este servidor').onclick=()=>{try{localStorage.setItem('abxs',sv.value.trim())}catch(e){}closeNet();openNet()};
+  add('button','Cerrar').onclick=()=>{closeNet();nt.style.display='none'}}
+ else{add('h2','PIN del grupo: '+net.pin);add('p','Jugadores: '+net.ps.length+'/4');
+  net.ps.forEach((id,n)=>add('p','Jugador '+(n+1)+(id===net.hostId?' (admin)':'')+(id===net.id?' — tú':'')));
+  if(net.host)add('button','Empezar partida','pri').onclick=()=>wsend({t:'start'});
+  else add('p','Esperando a que el admin empiece…');
+  add('button','Salir del grupo').onclick=()=>{closeNet();openNet()}}
+ nt.style.display='flex'}
+function openNet(){netUI('Conectando…');
+ try{net.ws=new WebSocket(srvUrl())}catch(e){return netUI('No se pudo conectar. Abre el juego desde tu servidor.')}
+ net.ws.onopen=()=>netUI();
+ net.ws.onmessage=e=>{try{netMsg(JSON.parse(e.data))}catch(x){}};
+ net.ws.onerror=()=>netUI('No se pudo conectar al servidor. Si el juego está en GitHub Pages, escribe abajo la dirección de tu servidor Node (Render, Railway…) y pulsa Conectar.');
+ net.ws.onclose=()=>{net.ws=null;if(net.on||net.pin)leaveNet('Conexión perdida.')}}
+function srvUrl(){let s='';try{s=(localStorage.getItem('abxs')||'').trim()}catch(e){}
+ if(!s)return(location.protocol==='https:'?'wss://':'ws://')+location.host;
+ s=s.replace('https://','').replace('http://','').replace('wss://','').replace('ws://','');if(s.endsWith('/'))s=s.slice(0,-1);
+ return(s.startsWith('localhost')||/^[0-9.]+(:|$)/.test(s)?'ws://':'wss://')+s}
+nb.onclick=()=>{if(net.ws&&net.ws.readyState===1)netUI();else openNet()};
+function netMsg(m){
+ if(m.t==='err')netUI(m.m);
+ else if(m.t==='lobby'){net.id=m.you;net.hostId=m.host;net.host=m.host===m.you;net.pin=m.pin;net.ps=m.ps;netUI()}
+ else if(m.t==='start')startOnline(m.ps);
+ else if(m.t==='left')delete rp[m.id];
+ else if(m.t==='closed'){if(state!=='over')leaveNet('El admin cerró el grupo.')}
+ else if(m.t==='m')onRelay(m.from,m.d)}
+function startOnline(ps){net.on=true;net.brk=false;np=ps.length;mi=ps.indexOf(net.id);kills=0;mk=0;ld=0;rpv={};
+ for(const k in rp)delete rp[k];
+ ps.forEach((id,i)=>{if(id!==net.id)rp[id]={x:SP[i][0],y:SP[i][1],a:0,st:1,iv:1,sk:0,dm:0}});
+ nt.style.display='none';reset(false)}
+function onRelay(from,d){
+ if(net.host){
+  if(d.k==='p'){const r=rp[from]||(rp[from]={dm:0});Object.assign(r,{x:+d.x,y:+d.y,a:+d.a,st:d.st|0,iv:d.iv|0,sk:d.sk|0})}
+  else if(d.k==='f'&&d.s&&state!=='between')shots.push({x:+d.s.x,y:+d.s.y,dx:+d.s.dx,dy:+d.s.dy,z:d.s.z|0,d:Math.min(12,+d.s.d||1),k:d.s.k|0})}
+ else if(d.k==='s')onSnap(d);
+ else if(d.k==='wd'){pts+=25;save();sfx('win');if(state==='play')state='between'}
+ else if(d.k==='nw'){wave=d.w-1;reset(true)}
+ else if(d.k==='end'){score=d.sc;if(d.w){pts+=100;end('Infección eliminada','Has superado las 10 oleadas. ¡Ganaste!','Jugar de nuevo')}else end('Te han infectado','Las bacterias ganaron esta vez.','Jugar de nuevo')}}
+function onSnap(d){foes=d.f.map(a=>({x:a[0],y:a[1],fl:a[2]}));shots=d.s.map(a=>({x:a[0],y:a[1],z:a[2],k:a[3]}));
+ rpv=d.pl;wave=d.w;total=d.n;score=d.sc;
+ if(d.kl>mk){pts+=(d.kl-mk)*10;mk=d.kl;save();sfx('pop')}
+ const m=d.dm[net.id]||0;if(m>ld){if(state==='play'&&inv<=0){hp-=m-ld;hurt=.45;if(hsfx<=0){sfx('hurt');hsfx=.4}}ld=m}}
+function hostSnap(dt){sa+=dt;if(sa<.05)return;sa=0;
+ const r2=v=>+v.toFixed(2),pl={},dm={};
+ pl[net.id]=[r2(px),r2(py),sk,state==='quiz'?2:state==='spec'?0:1];
+ for(const id in rp){const r=rp[id];pl[id]=[r2(r.x),r2(r.y),r.sk|0,r.st];dm[id]=r2(r.dm)}
+ tx2({k:'s',f:foes.map(f=>[r2(f.x),r2(f.y),f.fl>0?1:0]),s:shots.map(s=>[r2(s.x),r2(s.y),s.z,s.k|0]),pl,dm,w:wave,n:total,sc:score,kl:kills})}
+function others(){if(!net.on)return[];
+ if(net.host)return Object.values(rp).filter(r=>r.st).map(r=>[r.x,r.y,r.sk|0]);
+ return Object.keys(rpv).filter(id=>+id!==net.id&&rpv[id][3]).map(id=>[rpv[id][0],rpv[id][1],rpv[id][2]])}
+setInterval(()=>{if(net.on&&!net.host)tx2({k:'p',x:px,y:py,a:pa,st:state==='quiz'?2:(state==='spec'||state==='over')?0:1,iv:inv>0?1:0,sk},1)},50);
+let lt=0,ltT=null;
+document.addEventListener('touchend',e=>{const n=Date.now();if(n-lt<350&&e.target===ltT&&e.target.tagName!=='INPUT')e.preventDefault();lt=n;ltT=e.target},{passive:false});
+['gesturestart','gesturechange','dblclick'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
 wb.onclick=cycleWp;addEventListener('keydown',e=>{if(e.code==='KeyQ')cycleWp()});let lp=null,lx=0;
 cv.addEventListener('pointerdown',e=>{lp=e.pointerId;lx=e.clientX;cv.setPointerCapture(lp)});
 cv.addEventListener('pointermove',e=>{if(e.pointerId!==lp)return;if(state==='play')pa+=(e.clientX-lx)*.006;lx=e.clientX});
