@@ -136,6 +136,14 @@ wss.on('connection', (ws) => {
       const now = Date.now();
       if (!x || now - me.lc < 600) return;
       me.lc = now;
+      if (m.s === 'd') {
+        // mensaje privado: solo entre jugadores en línea (se entrega al destinatario y se devuelve al remitente)
+        const to = byCode[String(m.to)];
+        if (!me.code || !to || to === me) return send(ws, { t: 'ferr', m: 'Ese jugador no está en línea ahora mismo.' });
+        const o = { t: 'chat', s: 'd', n: me.name, x, from: me.code, to: to.code };
+        send(to.ws, o); send(ws, o);
+        return;
+      }
       const o = { t: 'chat', s: m.s === 'r' ? 'r' : 'g', n: me.name, x };
       if (o.s === 'r') {
         if (room) room.members.forEach((y) => send(y.ws, o));
