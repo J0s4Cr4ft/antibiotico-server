@@ -1,7 +1,8 @@
 // Servidor de Antibiótico 3D
 // - Sirve el juego (antibiotico.html)
-// - Grupos de hasta 4 con PIN, nombres y dificultad
-// - Amigos (presencia en línea e invitaciones), chat global y de grupo
+// - Grupos de hasta 4 con PIN, nombres, dificultad y modo infinito
+// - Partidas públicas (lista y partida rápida) y expulsión de jugadores por el admin
+// - Amigos (presencia en línea e invitaciones), chat global, de grupo y privado
 // - Ranking de puntuaciones (se guarda en scores.json si el disco lo permite)
 // El navegador del admin ejecuta la partida; el servidor solo reparte mensajes.
 const http = require('http');
@@ -25,12 +26,13 @@ const cleanName = (s, fb) =>
 
 // ---------- HTTP ----------
 const server = http.createServer((req, res) => {
-  const url = req.url.split('?')[0];
+  const [url, qs] = req.url.split('?');
   if (req.method === 'OPTIONS') { res.writeHead(204, CORS); return res.end(); }
   if (url === '/health') { res.writeHead(200, CORS); return res.end('ok'); }
   if (url === '/scores' && req.method === 'GET') {
+    const endless = /(^|&)e=1(&|$)/.test(qs || '') ? 1 : 0;
     res.writeHead(200, { ...CORS, 'Content-Type': 'application/json' });
-    return res.end(JSON.stringify(scores.slice(0, 20)));
+    return res.end(JSON.stringify(scores.filter((x) => (x.e ? 1 : 0) === endless).slice(0, 20)));
   }
   if (url === '/score' && req.method === 'POST') {
     let body = '';
@@ -39,10 +41,11 @@ const server = http.createServer((req, res) => {
       try {
         const o = JSON.parse(body);
         const s = Math.floor(Number(o.s)), w = Math.floor(Number(o.w)), d = Math.floor(Number(o.d));
-        if (!(s > 0 && s <= 5e6 && w >= 1 && w <= 10 && d >= 0 && d <= 3)) throw new Error('bad');
-        scores.push({ n: cleanName(o.n, 'Jugador'), s, w, d, m: o.m === 'coop' ? 'coop' : 'solo', t: Date.now() });
+        const e = o.e ? 1 : 0;
+        if (!(s > 0 && s <= 5e7 && w >= 1 && w <= 500 && d >= 0 && d <= 3 && (e || w <= 10))) throw new Error('bad');
+        scores.push({ n: cleanName(o.n, 'Jugador'), s, w, d, e, m: o.m === 'coop' ? 'coop' : 'solo', t: Date.now() });
         scores.sort((a, b) => b.s - a.s);
-        scores = scores.slice(0, 100);
+        scores = scores.slice(0, 200);
         saveScores();
         res.writeHead(200, CORS); res.end('ok');
       } catch { res.writeHead(400, CORS); res.end('bad'); }
@@ -65,12 +68,40 @@ let nextId = 1;
 
 const send = (ws, o) => { if (ws.readyState === 1) ws.send(JSON.stringify(o)); };
 const clampDf = (v) => (v == null ? 1 : Math.min(3, Math.max(0, v | 0)));
+const flag = (v) => (v ? 1 : 0);
 
 function sendLobby(room) {
   const ps = room.members.map((m) => m.id);
   const ns = room.members.map((m) => m.name);
   room.members.forEach((m) =>
-    send(m.ws, { t: 'lobby', pin: room.pin, host: room.members[0].id, you: m.id, ps, ns, df: room.df }));
+    send(m.ws, { t: 'lobby', pin: room.pin, host: room.members[0].id, you: m.id, ps, ns, df: room.df, en: room.en, pub: room.pub }));
+}
+
+function newPin() {
+  let pin;
+  do { pin = String(1000 + Math.floor(Math.random() * 9000)); } while (rooms[pin]);
+  return pin;
+}
+
+function createRoom(me, pin, m) {
+  me.room = rooms[pin] = {
+    pin, members: [me], started: false, ban: [],
+    df: clampDf(m.df), en: flag(m.en), pub: flag(m.pub),
+  };
+  sendLobby(me.room);
+}
+
+// devuelve un código de error o null si pudo entrar
+function joinRoom(me, r, name) {
+  if (!r) return 'nopin';
+  if (r.started) return 'started';
+  if (r.members.length >= MAX) return 'full';
+  if (me.code && r.ban.includes(me.code)) return 'banned';
+  me.name = cleanName(name, 'Jugador ' + (r.members.length + 1));
+  r.members.push(me);
+  me.room = r;
+  sendLobby(r);
+  return null;
 }
 
 function leaveRoom(me) {
@@ -86,6 +117,9 @@ function leaveRoom(me) {
     else sendLobby(room);
   }
 }
+
+const openPublic = () =>
+  Object.values(rooms).filter((r) => r.pub && !r.started && r.members.length < MAX);
 
 wss.on('connection', (ws) => {
   const me = { id: nextId++, ws, room: null, name: 'Jugador', code: '', lc: 0 };
@@ -103,28 +137,41 @@ wss.on('connection', (ws) => {
       if (!me.greeted) { me.greeted = true; send(ws, { t: 'hist', a: hist }); }
     } else if (m.t === 'create' && !room) {
       let pin = /^\d{4}$/.test(String(m.pin || '')) ? String(m.pin) : '';
-      if (pin && rooms[pin]) return send(ws, { t: 'err', m: 'Ese PIN ya está en uso.' });
-      if (!pin) do { pin = String(1000 + Math.floor(Math.random() * 9000)); } while (rooms[pin]);
+      if (pin && rooms[pin]) return send(ws, { t: 'err', m: 'pinused' });
+      if (!pin) pin = newPin();
       me.name = cleanName(m.name, 'Jugador 1');
-      me.room = rooms[pin] = { pin, members: [me], started: false, df: clampDf(m.df) };
-      sendLobby(me.room);
+      createRoom(me, pin, m);
     } else if (m.t === 'join' && !room) {
-      const r = rooms[String(m.pin || '').trim()];
-      if (!r) return send(ws, { t: 'err', m: 'PIN incorrecto.' });
-      if (r.started) return send(ws, { t: 'err', m: 'Esa partida ya empezó.' });
-      if (r.members.length >= MAX) return send(ws, { t: 'err', m: 'El grupo está lleno (máx. 4).' });
-      me.name = cleanName(m.name, 'Jugador ' + (r.members.length + 1));
-      r.members.push(me);
-      me.room = r;
-      sendLobby(r);
+      const err = joinRoom(me, rooms[String(m.pin || '').trim()], m.name);
+      if (err) send(ws, { t: 'err', m: err });
+    } else if (m.t === 'quick' && !room) {
+      // partida rápida: entra en una pública con sitio o crea una nueva pública
+      const cand = openPublic().find((r) => !(me.code && r.ban.includes(me.code)));
+      if (cand) { const err = joinRoom(me, cand, m.name); if (err) send(ws, { t: 'err', m: err }); }
+      else { me.name = cleanName(m.name, 'Jugador 1'); createRoom(me, newPin(), { ...m, pub: 1 }); }
+    } else if (m.t === 'list') {
+      send(ws, {
+        t: 'rooms',
+        a: openPublic().map((r) => ({ pin: r.pin, n: r.members.length, host: r.members[0].name, df: r.df, en: r.en })),
+      });
     } else if (room && m.t === 'cfg' && room.members[0] === me && !room.started) {
       room.df = clampDf(m.df);
+      room.en = flag(m.en);
+      room.pub = flag(m.pub);
+      sendLobby(room);
+    } else if (room && m.t === 'kick' && room.members[0] === me && !room.started) {
+      const target = room.members.find((x) => x.id === m.id);
+      if (!target || target === me) return;
+      room.members = room.members.filter((x) => x !== target);
+      if (target.code) room.ban.push(target.code);
+      target.room = null;
+      send(target.ws, { t: 'kicked' });
       sendLobby(room);
     } else if (room && m.t === 'start' && room.members[0] === me && !room.started) {
       room.started = true;
       const ps = room.members.map((x) => x.id);
       const ns = room.members.map((x) => x.name);
-      room.members.forEach((x) => send(x.ws, { t: 'start', ps, ns, df: room.df }));
+      room.members.forEach((x) => send(x.ws, { t: 'start', ps, ns, df: room.df, en: room.en }));
     } else if (m.t === 'leave') {
       leaveRoom(me);
     } else if (room && room.started && m.t === 'h') {
@@ -137,9 +184,9 @@ wss.on('connection', (ws) => {
       if (!x || now - me.lc < 600) return;
       me.lc = now;
       if (m.s === 'd') {
-        // mensaje privado: solo entre jugadores en línea (se entrega al destinatario y se devuelve al remitente)
+        // mensaje privado: solo entre jugadores en línea (al destinatario y eco al remitente)
         const to = byCode[String(m.to)];
-        if (!me.code || !to || to === me) return send(ws, { t: 'ferr', m: 'Ese jugador no está en línea ahora mismo.' });
+        if (!me.code || !to || to === me) return send(ws, { t: 'ferr', m: 'offline' });
         const o = { t: 'chat', s: 'd', n: me.name, x, from: me.code, to: to.code };
         send(to.ws, o); send(ws, o);
         return;
@@ -161,7 +208,7 @@ wss.on('connection', (ws) => {
       send(ws, { t: 'pres', on });
     } else if (m.t === 'freq' && me.code) {
       const to = byCode[String(m.to)];
-      if (!to || to === me) return send(ws, { t: 'ferr', m: 'Ese jugador no está en línea ahora mismo.' });
+      if (!to || to === me) return send(ws, { t: 'ferr', m: 'offline' });
       send(to.ws, { t: 'freq', from: me.code, name: me.name });
     } else if (m.t === 'facc' && me.code) {
       const to = byCode[String(m.to)];
