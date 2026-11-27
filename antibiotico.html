@@ -43,8 +43,8 @@ html,body{height:100%;margin:0;background:#0d0407;overflow:hidden;touch-action:n
 #ov #ob{width:min(280px,90%);padding:16px 28px;font-size:22px;border:3px solid #2a0b12;background:linear-gradient(90deg,#ffd23f 50%,#fff 50%);color:#2a0b12;box-shadow:0 6px 0 #8a5a00,0 10px 24px rgba(0,0,0,.5);transition:transform .1s}
 #ov #ob:active{transform:translateY(4px);box-shadow:0 2px 0 #8a5a00}
 #ov #dfb,#ov #mdb{background:rgba(255,255,255,.08);color:#ffd23f;padding:8px 18px;font-size:14px;border-color:rgba(255,210,63,.5)}
-#tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 10px;width:100%;justify-items:center;margin-top:4px}
-#ov .tile{width:84px;height:84px;padding:0;border-radius:50%;border:2px solid rgba(255,210,63,.55);background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.22),rgba(255,255,255,.05) 60%);color:#f6e6d6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:600 10.5px Georgia,serif;box-shadow:inset 0 0 14px rgba(0,0,0,.35)}
+#tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 8px;width:100%;justify-items:center;margin-top:4px}
+#ov .tile{width:76px;height:76px;padding:0;border-radius:50%;border:2px solid rgba(255,210,63,.55);background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.22),rgba(255,255,255,.05) 60%);color:#f6e6d6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:600 10px Georgia,serif;box-shadow:inset 0 0 14px rgba(0,0,0,.35)}
 #ov .tile svg{width:40px;height:26px}
 #ov .tile:active{transform:scale(.94)}
 #how{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:11px;opacity:.8}
@@ -95,7 +95,7 @@ body.intro #hud,body.intro #og,body.intro #js,body.intro #fb,body.intro #wb,body
 #mu{position:fixed;z-index:1;top:calc(60px + env(safe-area-inset-top,0px));left:14px;width:40px;height:40px;border-radius:50%;border:1px solid #f6e6d6;background:rgba(13,4,7,.6);color:#f6e6d6;font-size:18px}
 #opts{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 /* ---- decoración ---- */
-.pn{background:radial-gradient(ellipse at 50% 15%,rgba(94,21,38,.97),rgba(13,4,7,.98) 72%)}
+.pn{background:radial-gradient(ellipse at 50% 15%,#5e1526,#0d0407 72%)}
 .pn::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle 70px at 12% 18%,rgba(255,120,140,.16),transparent),radial-gradient(circle 100px at 88% 28%,rgba(178,107,224,.16),transparent),radial-gradient(circle 80px at 18% 82%,rgba(127,208,138,.14),transparent),radial-gradient(circle 60px at 84% 88%,rgba(255,210,63,.13),transparent);animation:drift 9s ease-in-out infinite alternate}
 @keyframes drift{to{transform:translate(10px,-12px) scale(1.06)}}
 @media (prefers-reduced-motion:reduce){.pn::before{animation:none}}
@@ -128,14 +128,37 @@ body.intro #hud,body.intro #og,body.intro #js,body.intro #fb,body.intro #wb,body
 #qz.good{box-shadow:inset 0 0 120px rgba(46,229,157,.35)}
 #qz.miss{box-shadow:inset 0 0 120px rgba(255,77,109,.35)}
 .pn .bad{animation:shake .3s}
+/* ---- pantalla de carga ---- */
+#ld{position:fixed;inset:0;z-index:50;background:#0d0407;display:flex;flex-direction:column;justify-content:space-between;align-items:center;overflow:hidden;transition:opacity .8s}
+#ld.out{opacity:0;pointer-events:none}
+#ldbg{position:absolute;inset:0}
+#ldbg i{position:absolute;inset:-6%;background-size:cover;background-position:center;image-rendering:pixelated;opacity:0;transform:scale(1.05);transition:opacity 1.1s;filter:saturate(1.25) brightness(1.15)}
+#ldbg i.on{opacity:1;animation:kb 5s linear forwards}
+@keyframes kb{to{transform:scale(1.2) translate(-1.5%,-1%)}}
+#ld::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 42%,transparent 35%,rgba(13,4,7,.72) 100%),linear-gradient(180deg,rgba(13,4,7,.4),transparent 25%,transparent 62%,rgba(13,4,7,.88))}
+#ldc{position:relative;z-index:1;margin:auto;text-align:center;padding:0 14px}
+#ldlogo{width:112px;animation:bob 3s ease-in-out infinite}
+#ldt{font:italic 900 clamp(36px,12vw,78px) Georgia,serif;letter-spacing:2px;line-height:1;background:linear-gradient(180deg,#fff3b0,#ffd23f 45%,#ff7a59 75%,#ff2d55);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 rgba(90,10,20,.9)) drop-shadow(0 0 24px rgba(255,77,109,.55));animation:pulseT 2.4s ease-in-out infinite}
+@keyframes pulseT{50%{filter:drop-shadow(0 4px 0 rgba(90,10,20,.9)) drop-shadow(0 0 42px rgba(255,210,63,.85))}}
+#lds{margin-top:12px;letter-spacing:5px;font-size:12px;color:#ffd23f;text-shadow:0 2px 4px #000}
+#ldf{position:relative;z-index:1;width:100%;padding-bottom:calc(34px + env(safe-area-inset-bottom,0px))}
+#ldb{width:min(520px,86%);height:16px;margin:0 auto 10px;border-radius:10px;background:rgba(0,0,0,.65);border:2px solid #ffd23f;overflow:hidden;box-shadow:0 0 16px rgba(255,210,63,.35)}
+#ldp{position:relative;height:100%;width:0;background:linear-gradient(90deg,#ff2d55,#ff8a4c,#ffd23f);box-shadow:0 0 12px rgba(255,210,63,.8);transition:width .3s ease-out;overflow:hidden}
+#ldp::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.5) 50%,transparent 60%);animation:shine 1.4s linear infinite}
+#ldm{text-align:center;font-size:13px;letter-spacing:2px;color:#f6e6d6;text-shadow:0 2px 4px #000}
+@media (prefers-reduced-motion:reduce){#ldbg i.on,#ldlogo,#ldt,#ldp::after{animation:none}}
 </style>
 </head>
 <body>
+<div id="ld"><div id="ldbg"><i></i><i></i><i></i><i></i><i></i></div>
+<div id="ldc"><svg id="ldlogo" viewBox="0 0 120 56"><g transform="rotate(-18 60 28)"><rect x="8" y="14" width="104" height="28" rx="14" fill="#fff"/><path d="M60 14H22a14 14 0 0 0 0 28h38z" fill="#ffd23f"/><rect x="8" y="14" width="104" height="28" rx="14" fill="none" stroke="#2a0b12" stroke-width="3"/><path d="M60 14v28" stroke="#2a0b12" stroke-width="3"/><rect x="20" y="19" width="34" height="5" rx="2.5" fill="#fff" opacity=".6"/></g></svg>
+<div id="ldt">ANTIBIÓTICO 3D</div><div id="lds">SHOOTER DENTRO DEL CUERPO</div></div>
+<div id="ldf"><div id="ldb"><div id="ldp"></div></div><div id="ldm">Cargando…  0%</div></div></div>
 <canvas id="v"></canvas>
 <div id="hud"><div id="bar"><div id="hp"></div></div><div id="cnt"></div></div>
 <div id="og"></div>
 <div id="js"><div id="kn"></div></div>
-<button id="fb">Lanzar</button>
+<button id="fb" data-t>Lanzar</button>
 <button id="wb">Jeringa</button>
 <div id="ov"><canvas id="bg"></canvas>
 <div id="ovc">
@@ -151,11 +174,13 @@ body.intro #hud,body.intro #og,body.intro #js,body.intro #fb,body.intro #wb,body
 <button id="frb" class="tile"><svg viewBox="0 0 48 32"><ellipse cx="13" cy="16" rx="9" ry="7" fill="#7fd08a" stroke="#2f7a3a" stroke-width="2"/><path d="M22 16q5-9 9 0t9 0 6 0" fill="none" stroke="#2f7a3a" stroke-width="2.5"/></svg><span data-t>Amigos</span></button>
 <button id="rkb" class="tile"><svg viewBox="0 0 48 32"><circle cx="24" cy="16" r="13" fill="#b26be0" stroke="#5b2a80" stroke-width="2"/><circle cx="19" cy="13" r="2.5" fill="#5b2a80"/><circle cx="27" cy="19" r="2.5" fill="#5b2a80"/><circle cx="26" cy="11" r="1.5" fill="#5b2a80"/></svg><span data-t>Ranking</span></button>
 <button id="acb" class="tile"><svg viewBox="0 0 48 32"><path d="M24 2l4.4 9 9.8 1.4-7.1 6.9 1.7 9.8L24 24.5l-8.8 4.6 1.7-9.8-7.1-6.9 9.8-1.4z" fill="#ffd23f" stroke="#a8741a" stroke-width="2" stroke-linejoin="round"/></svg><span data-t>Logros</span></button>
+<button id="bsb" class="tile"><svg viewBox="0 0 48 32"><ellipse cx="18" cy="16" rx="13" ry="8" fill="#c9d86a" stroke="#6b7f1c" stroke-width="2"/><circle cx="14" cy="14" r="1.8" fill="#1a0508"/><circle cx="21" cy="14" r="1.8" fill="#1a0508"/><path d="M31 16q4-8 8 0t8 0" fill="none" stroke="#6b7f1c" stroke-width="2.5"/></svg><span data-t>Bestiario</span></button>
+<button id="pfb" class="tile"><svg viewBox="0 0 48 32"><circle cx="24" cy="11" r="6" fill="#f6e6d6"/><path d="M11 30c0-8 6-12 13-12s13 4 13 12z" fill="#f6e6d6"/></svg><span data-t>Perfil</span></button>
 <button id="stb" class="tile"><svg viewBox="0 0 48 32"><circle cx="24" cy="16" r="9" fill="none" stroke="#f6e6d6" stroke-width="5" stroke-dasharray="4 3"/><circle cx="24" cy="16" r="4" fill="#f6e6d6"/></svg><span data-t>Ajustes</span></button>
 </div>
 <div id="how"><span data-t>Joystick: moverte</span><span data-t>Arrastrar: mirar</span><span data-t>Botón: lanzar</span></div>
 </div></div>
-<div id="shp" class="pn"></div><div id="net" class="pn"></div><div id="frp" class="pn"></div><div id="lbp" class="pn"></div><div id="pub" class="pn"></div><div id="acp" class="pn"></div><div id="stp" class="pn"></div>
+<div id="shp" class="pn"></div><div id="net" class="pn"></div><div id="frp" class="pn"></div><div id="lbp" class="pn"></div><div id="pub" class="pn"></div><div id="acp" class="pn"></div><div id="stp" class="pn"></div><div id="pfp" class="pn"></div><div id="bsp" class="pn"></div>
 <div id="bk"><span id="bkt"></span><button id="bks" data-t>Tienda</button><button id="bkn" data-t>Siguiente oleada ya</button></div>
 <button id="chb">Chat</button><div id="cl"></div>
 <div id="cp"><div id="cpt"><button id="cpg" class="on" data-t>Global</button><button id="cpr" data-t>Grupo</button><button id="cpd">Privado</button><button id="cpx">✕</button></div><div id="cpf"></div><div id="cpl"></div><div id="cpi"><input id="cin" maxlength="120" placeholder="Escribe un mensaje…" data-p><button id="cse" data-t>Enviar</button></div></div>
@@ -165,7 +190,7 @@ body.intro #hud,body.intro #og,body.intro #js,body.intro #fb,body.intro #wb,body
 <div id="qz" class="pn"><div id="qk"></div><div id="qi"></div><small id="qc"></small><h2 id="qt"></h2><div id="qa"></div><p id="qf"></p><button id="qn" class="pri" style="display:none">Continue</button></div>
 <button id="mu">♪</button>
 <script>
-const EN={"SHOOTER DENTRO DEL CUERPO":"SHOOTER INSIDE THE BODY","Sobrevive a 10 oleadas de bacterias: cada una trae más y más fuertes. Mini jefe en la oleada 5 y jefe final en la 10. Encadena eliminaciones para multiplicar tu puntuación.":"Survive 10 waves of bacteria: each one brings more and tougher cells. Mini boss on wave 5 and final boss on wave 10. Chain kills to multiply your score.","Empezar":"Start","Tienda":"Shop","Online":"Online","Amigos":"Friends","Ranking":"Ranking","Logros":"Achievements","Ajustes":"Settings","Joystick: moverte":"Joystick: move","Arrastrar: mirar":"Drag: look","Botón: lanzar":"Button: throw","Dificultad: ":"Difficulty: ","Modo: ":"Mode: ","Normal (10 oleadas)":"Normal (10 waves)","Infinito":"Endless","10 oleadas":"10 waves","Fácil":"Easy","Normal":"Normal","Difícil":"Hard","Pesadilla":"Nightmare","Oleada ":"Wave "," de 10":" of 10","Bacterias ":"Cells ","Puntuación ":"Score ","Tienda ":"Shop ","Puntuación: ":"Score: ","Récord: ":"Best: ","oleada ":"wave ","cooperativo":"co-op","solo":"solo","Te han infectado":"You got infected","Las bacterias ganaron esta vez.":"The bacteria won this time.","Las bacterias ganaron esta vez. Vuelve a intentarlo.":"The bacteria won this time. Try again.","Jugar de nuevo":"Play again","Infección eliminada":"Infection cleared","Has superado las 10 oleadas. ¡Ganaste!":"You survived all 10 waves. You win!"," superada":" cleared"," superada. Siguiente en ":" cleared. Next in ","Bonificación +":"Bonus +","Recuperas algo de vida; gasta tus puntos en la tienda antes de seguir.":"You recover some health; spend your points in the shop before continuing.","Siguiente":"Next","Saltar ▶":"Skip ▶","Siguiente oleada ya":"Next wave now","ESCUDO":"SHIELD","Observando a ":"Spectating ","Has sido eliminado. Observas a tus compañeros hasta la siguiente oleada.":"You were eliminated. You spectate your teammates until the next wave.","Mitocondria":"Mitochondrion","Lisosoma":"Lysosome","Núcleo":"Nucleus","Flagelo":"Flagellum","Dispara más rápido":"Fires faster","Antibiótico más fuerte":"Stronger antibiotic","+25 de vida":"+25 health","+15% de velocidad":"+15% speed",", nivel ":", level ","máx.":"max.","Armas":"Weapons","Skins":"Skins","Puntos: ":"Points: ","equipada":"equipped","equipar":"equip","Cerrar":"Close","Jeringa":"Syringe","Ametralladora de cápsulas":"Capsule machine gun","Cañón de vacunas":"Vaccine cannon","equilibrada":"balanced","dispara muy rápido, poco daño":"fires very fast, low damage","mucho daño, dispara muy lento":"huge damage, fires very slowly","Clásico":"Classic","Rubí":"Ruby","Esmeralda":"Emerald","Océano":"Ocean","Dorado":"Golden","ESTAFILOCOCO REY":"KING STAPHYLOCOCCUS","SUPERBACTERIA RESISTENTE":"RESISTANT SUPERBACTERIUM","MINI JEFE":"MINI BOSS","JEFE FINAL":"FINAL BOSS"," ¡FURIA!":" RAGE!","Coco":"Coccus","Bacilo veloz":"Fast bacillus","Estreptococo blindado":"Armored streptococcus","Escupidora":"Spitter","Kamikaze":"Kamikaze","¡Nueva célula!":"New cell!","PREGUNTA PARA REVIVIR":"REVIVE QUESTION","PREGUNTA BONUS":"BONUS QUESTION","¡Correcto! Puntos extra: +":"Correct! Bonus points: +","Casi... no pasa nada. La respuesta correcta está en verde.":"Close... no harm done. The correct answer is in green.","¡Correcto! +30 puntos. Vuelves a la pelea con escudo.":"Correct! +30 points. You are back in the fight with a shield.","Respuesta incorrecta. La correcta está en verde.":"Wrong answer. The right one is in green.","Continuar":"Continue","Ver resultado":"See result","Logro desbloqueado":"Achievement unlocked","Primera sangre":"First blood","Elimina tu primera célula":"Kill your first cell","Exterminador":"Exterminator","Elimina 100 células":"Kill 100 cells","Plaga controlada":"Plague under control","Elimina 500 células":"Kill 500 cells","Rey destronado":"King dethroned","Derrota al Estafilococo Rey":"Defeat King Staphylococcus","Antibiótico definitivo":"Ultimate antibiotic","Derrota a la Superbacteria Resistente":"Defeat the Resistant Superbacterium","Intocable":"Untouchable","Supera una oleada sin recibir daño":"Clear a wave without taking damage","Sabelotodo":"Know-it-all","Acierta 5 preguntas bonus":"Answer 5 bonus questions correctly","Fénix":"Phoenix","Revive 3 veces":"Revive 3 times","Combo máximo":"Max combo","Consigue un combo x5":"Reach a x5 combo","Naturalista":"Naturalist","Elimina un ejemplar de cada tipo de célula":"Kill one of every cell type","Valiente":"Brave","Gana en dificultad Pesadilla":"Win on Nightmare difficulty","Trabajo en equipo":"Teamwork","Termina una partida cooperativa":"Finish a co-op game","Buen compañero":"Good teammate","Añade a un amigo":"Add a friend","Sin fin":"Endless","Llega a la oleada 15 en modo infinito":"Reach wave 15 in endless mode","Coleccionista":"Collector","Consigue todas las armas":"Get every weapon","Las preguntas siempre están en inglés.":"Questions are always in English.","Jugar online":"Play online","Pon tu nombre y un PIN de 4 dígitos. Para unirte, el del grupo; para crear uno, el que quieras (vacío = aleatorio).":"Enter your name and a 4-digit PIN. To join, use the group's PIN; to create one, pick any (empty = random).","Tu nombre":"Your name","Crear grupo (máx. 4 jugadores)":"Create group (max. 4 players)","Unirme con PIN":"Join with PIN","Partida rápida (pública)":"Quick play (public)","Ver partidas públicas":"Browse public games","Conectar a este servidor":"Connect to this server","Entra con este PIN":"Join with this PIN","Jugadores: ":"Players: "," (admin)":" (host)","tú":"you","Expulsar":"Kick","Visibilidad: ":"Visibility: ","Pública (cualquiera puede entrar)":"Public (anyone can join)","Privada (solo con PIN)":"Private (PIN only)","Invitar a ":"Invite ","Invitado: ":"Invited: ","Invitado":"Invited","Invitar":"Invite","Empezar partida":"Start game","Esperando a que el admin empiece…":"Waiting for the host to start…","Salir del grupo":"Leave group","Jugador ":"Player ","No se pudo conectar. Abre el juego desde tu servidor.":"Could not connect. Open the game from your server.","No se pudo conectar a ":"Could not connect to ",". Comprueba que el servidor esté encendido y, si hace falta, escribe abajo su dirección (p. ej. mi-juego.up.railway.app) y pulsa Conectar.":". Check that the server is on and, if needed, type its address below (e.g. my-game.up.railway.app) and press Connect.","Conectando a ":"Connecting to ","Conexión perdida.":"Connection lost.","El admin cerró el grupo.":"The host closed the group.","El admin te ha expulsado del grupo.":"The host kicked you from the group.","Ese PIN ya está en uso.":"That PIN is already in use.","PIN incorrecto.":"Wrong PIN.","Esa partida ya empezó.":"That game has already started.","El grupo está lleno (máx. 4).":"The group is full (max. 4).","Te han expulsado de este grupo.":"You were kicked from this group.","Ese jugador no está en línea ahora mismo.":"That player is not online right now.","Partidas públicas":"Public games","Buscando…":"Searching…","Elige una partida para unirte":"Pick a game to join","No hay partidas públicas ahora mismo. ¡Crea una desde \"Jugar online\"!":"There are no public games right now. Create one from \"Play online\"!"," quiere ser tu amigo":" wants to be your friend"," ahora es tu amigo":" is now your friend"," te invita a su grupo":" invites you to their group","Aceptar":"Accept","Ignorar":"Ignore","Responder":"Reply","Unirme":"Join","Tu código: ":"Your code: ","Pasa tu código a un amigo o añade el suyo.":"Share your code with a friend or add theirs.","Sin conexión con el servidor: no se ve quién está en línea.":"No connection to the server: you can't see who is online.","en partida":"in a game","en un grupo":"in a group","en línea":"online","desconectado":"offline","Quitar":"Remove","Chat":"Chat","Código de tu amigo":"Your friend's code","Añadir amigo":"Add friend","Ese es tu propio código.":"That's your own code.","Escribe un código de 6 caracteres.":"Enter a 6-character code.","Solicitud enviada (si el jugador está en línea la recibirá).":"Request sent (the player will get it if online).","Cargando…":"Loading…","Mejores puntuaciones":"Top scores","Aún no hay puntuaciones. ¡Sé el primero!":"No scores yet. Be the first!","No se pudo cargar el ranking. Abre el juego desde tu servidor (o escribe su dirección en Jugar online).":"Could not load the leaderboard. Open the game from your server (or enter its address in Play online).","Elige arriba a quién escribir.":"Pick above who to write to.","Añade amigos (menú → Amigos) para chatear en privado.":"Add friends (menu → Friends) to chat privately.","Privado":"Private","Global":"Global","Grupo":"Group","Enviar":"Send","Escribe un mensaje…":"Type a message…","Sin conexión con el servidor.":"No connection to the server.","No estás en un grupo.":"You are not in a group.","Elige primero a un amigo.":"Pick a friend first.","Sistema":"System","Antibiótico 3D":"Antibiotic 3D"};
+const EN={"SHOOTER DENTRO DEL CUERPO":"SHOOTER INSIDE THE BODY","Sobrevive a 10 oleadas de bacterias: cada una trae más y más fuertes. Mini jefe en la oleada 5 y jefe final en la 10. Encadena eliminaciones para multiplicar tu puntuación.":"Survive 10 waves of bacteria: each one brings more and tougher cells. Mini boss on wave 5 and final boss on wave 10. Chain kills to multiply your score.","Empezar":"Start","Tienda":"Shop","Online":"Online","Amigos":"Friends","Ranking":"Ranking","Logros":"Achievements","Ajustes":"Settings","Joystick: moverte":"Joystick: move","Arrastrar: mirar":"Drag: look","Botón: lanzar":"Button: throw","Dificultad: ":"Difficulty: ","Modo: ":"Mode: ","Normal (10 oleadas)":"Normal (10 waves)","Infinito":"Endless","10 oleadas":"10 waves","Fácil":"Easy","Normal":"Normal","Difícil":"Hard","Pesadilla":"Nightmare","Oleada ":"Wave "," de 10":" of 10","Bacterias ":"Cells ","Puntuación ":"Score ","Tienda ":"Shop ","Puntuación: ":"Score: ","Récord: ":"Best: ","oleada ":"wave ","cooperativo":"co-op","solo":"solo","Te han infectado":"You got infected","Las bacterias ganaron esta vez.":"The bacteria won this time.","Las bacterias ganaron esta vez. Vuelve a intentarlo.":"The bacteria won this time. Try again.","Jugar de nuevo":"Play again","Infección eliminada":"Infection cleared","Has superado las 10 oleadas. ¡Ganaste!":"You survived all 10 waves. You win!"," superada":" cleared"," superada. Siguiente en ":" cleared. Next in ","Bonificación +":"Bonus +","Recuperas algo de vida; gasta tus puntos en la tienda antes de seguir.":"You recover some health; spend your points in the shop before continuing.","Siguiente":"Next","Saltar ▶":"Skip ▶","Siguiente oleada ya":"Next wave now","ESCUDO":"SHIELD","Observando a ":"Spectating ","Has sido eliminado. Observas a tus compañeros hasta la siguiente oleada.":"You were eliminated. You spectate your teammates until the next wave.","Mitocondria":"Mitochondrion","Lisosoma":"Lysosome","Núcleo":"Nucleus","Flagelo":"Flagellum","Dispara más rápido":"Fires faster","Antibiótico más fuerte":"Stronger antibiotic","+25 de vida":"+25 health","+15% de velocidad":"+15% speed",", nivel ":", level ","máx.":"max.","Armas":"Weapons","Skins":"Skins","Puntos: ":"Points: ","equipada":"equipped","equipar":"equip","Cerrar":"Close","Jeringa":"Syringe","Ametralladora de cápsulas":"Capsule machine gun","Cañón de vacunas":"Vaccine cannon","equilibrada":"balanced","dispara muy rápido, poco daño":"fires very fast, low damage","mucho daño, dispara muy lento":"huge damage, fires very slowly","Clásico":"Classic","Rubí":"Ruby","Esmeralda":"Emerald","Océano":"Ocean","Dorado":"Golden","ESTAFILOCOCO REY":"KING STAPHYLOCOCCUS","SUPERBACTERIA RESISTENTE":"RESISTANT SUPERBACTERIUM","MINI JEFE":"MINI BOSS","JEFE FINAL":"FINAL BOSS"," ¡FURIA!":" RAGE!","Coco":"Coccus","Bacilo veloz":"Fast bacillus","Estreptococo blindado":"Armored streptococcus","Escupidora":"Spitter","Kamikaze":"Kamikaze","¡Nueva célula!":"New cell!","PREGUNTA PARA REVIVIR":"REVIVE QUESTION","PREGUNTA BONUS":"BONUS QUESTION","¡Correcto! Puntos extra: +":"Correct! Bonus points: +","Casi... no pasa nada. La respuesta correcta está en verde.":"Close... no harm done. The correct answer is in green.","¡Correcto! +30 puntos. Vuelves a la pelea con escudo.":"Correct! +30 points. You are back in the fight with a shield.","Respuesta incorrecta. La correcta está en verde.":"Wrong answer. The right one is in green.","Continuar":"Continue","Ver resultado":"See result","Logro desbloqueado":"Achievement unlocked","Primera sangre":"First blood","Elimina tu primera célula":"Kill your first cell","Exterminador":"Exterminator","Elimina 100 células":"Kill 100 cells","Plaga controlada":"Plague under control","Elimina 500 células":"Kill 500 cells","Rey destronado":"King dethroned","Derrota al Estafilococo Rey":"Defeat King Staphylococcus","Antibiótico definitivo":"Ultimate antibiotic","Derrota a la Superbacteria Resistente":"Defeat the Resistant Superbacterium","Intocable":"Untouchable","Supera una oleada sin recibir daño":"Clear a wave without taking damage","Sabelotodo":"Know-it-all","Acierta 5 preguntas bonus":"Answer 5 bonus questions correctly","Fénix":"Phoenix","Revive 3 veces":"Revive 3 times","Combo máximo":"Max combo","Consigue un combo x5":"Reach a x5 combo","Naturalista":"Naturalist","Elimina un ejemplar de cada tipo de célula":"Kill one of every cell type","Valiente":"Brave","Gana en dificultad Pesadilla":"Win on Nightmare difficulty","Trabajo en equipo":"Teamwork","Termina una partida cooperativa":"Finish a co-op game","Buen compañero":"Good teammate","Añade a un amigo":"Add a friend","Sin fin":"Endless","Llega a la oleada 15 en modo infinito":"Reach wave 15 in endless mode","Coleccionista":"Collector","Consigue todas las armas":"Get every weapon","Las preguntas siempre están en inglés.":"Questions are always in English.","Jugar online":"Play online","Pon tu nombre y un PIN de 4 dígitos. Para unirte, el del grupo; para crear uno, el que quieras (vacío = aleatorio).":"Enter your name and a 4-digit PIN. To join, use the group's PIN; to create one, pick any (empty = random).","Tu nombre":"Your name","Crear grupo (máx. 4 jugadores)":"Create group (max. 4 players)","Unirme con PIN":"Join with PIN","Partida rápida (pública)":"Quick play (public)","Ver partidas públicas":"Browse public games","Conectar a este servidor":"Connect to this server","Entra con este PIN":"Join with this PIN","Jugadores: ":"Players: "," (admin)":" (host)","tú":"you","Expulsar":"Kick","Visibilidad: ":"Visibility: ","Pública (cualquiera puede entrar)":"Public (anyone can join)","Privada (solo con PIN)":"Private (PIN only)","Invitar a ":"Invite ","Invitado: ":"Invited: ","Invitado":"Invited","Invitar":"Invite","Empezar partida":"Start game","Esperando a que el admin empiece…":"Waiting for the host to start…","Salir del grupo":"Leave group","Jugador ":"Player ","No se pudo conectar. Abre el juego desde tu servidor.":"Could not connect. Open the game from your server.","No se pudo conectar a ":"Could not connect to ",". Comprueba que el servidor esté encendido y, si hace falta, escribe abajo su dirección (p. ej. mi-juego.up.railway.app) y pulsa Conectar.":". Check that the server is on and, if needed, type its address below (e.g. my-game.up.railway.app) and press Connect.","Conectando a ":"Connecting to ","Conexión perdida.":"Connection lost.","El admin cerró el grupo.":"The host closed the group.","El admin te ha expulsado del grupo.":"The host kicked you from the group.","Ese PIN ya está en uso.":"That PIN is already in use.","PIN incorrecto.":"Wrong PIN.","Esa partida ya empezó.":"That game has already started.","El grupo está lleno (máx. 4).":"The group is full (max. 4).","Te han expulsado de este grupo.":"You were kicked from this group.","Ese jugador no está en línea ahora mismo.":"That player is not online right now.","Partidas públicas":"Public games","Buscando…":"Searching…","Elige una partida para unirte":"Pick a game to join","No hay partidas públicas ahora mismo. ¡Crea una desde \"Jugar online\"!":"There are no public games right now. Create one from \"Play online\"!"," quiere ser tu amigo":" wants to be your friend"," ahora es tu amigo":" is now your friend"," te invita a su grupo":" invites you to their group","Aceptar":"Accept","Ignorar":"Ignore","Responder":"Reply","Unirme":"Join","Tu código: ":"Your code: ","Pasa tu código a un amigo o añade el suyo.":"Share your code with a friend or add theirs.","Sin conexión con el servidor: no se ve quién está en línea.":"No connection to the server: you can't see who is online.","en partida":"in a game","en un grupo":"in a group","en línea":"online","desconectado":"offline","Quitar":"Remove","Chat":"Chat","Código de tu amigo":"Your friend's code","Añadir amigo":"Add friend","Ese es tu propio código.":"That's your own code.","Escribe un código de 6 caracteres.":"Enter a 6-character code.","Solicitud enviada (si el jugador está en línea la recibirá).":"Request sent (the player will get it if online).","Cargando…":"Loading…","Mejores puntuaciones":"Top scores","Aún no hay puntuaciones. ¡Sé el primero!":"No scores yet. Be the first!","No se pudo cargar el ranking. Abre el juego desde tu servidor (o escribe su dirección en Jugar online).":"Could not load the leaderboard. Open the game from your server (or enter its address in Play online).","Elige arriba a quién escribir.":"Pick above who to write to.","Añade amigos (menú → Amigos) para chatear en privado.":"Add friends (menu → Friends) to chat privately.","Privado":"Private","Global":"Global","Grupo":"Group","Enviar":"Send","Escribe un mensaje…":"Type a message…","Sin conexión con el servidor.":"No connection to the server.","No estás en un grupo.":"You are not in a group.","Elige primero a un amigo.":"Pick a friend first.","Sistema":"System","Antibiótico 3D":"Antibiotic 3D","Lanzar":"Throw","Cargando…":"Loading…","Cultivando bacterias…":"Growing bacteria…","Dibujando el laberinto…":"Drawing the maze…","Despertando al Estafilococo Rey…":"Waking King Staphylococcus…","Cargando la Superbacteria…":"Loading the Superbacterium…","Reuniendo a las células…":"Gathering the cells…","Cargando la escopeta…":"Loading the shotgun…","¡Listo!":"Ready!","Escopeta":"Shotgun","perdigones dispersos, corto alcance":"spread pellets, short range","Bestiario":"Bestiary","Perfil":"Profile","Nv ":"Lv ","Novato":"Rookie","Practicante":"Intern","Médico":"Doctor","Cirujano":"Surgeon","Doctor":"Specialist","Leyenda":"Legend","Descubiertas: ":"Discovered: ","Derrótala para descubrirla.":"Defeat it to discover it.","Eliminados: ":"Defeated: ","La célula más común. Persigue sin descanso.":"The most common cell. It chases relentlessly.","Pequeño y rapidísimo, pero se rompe con un golpe.":"Tiny and very fast, but it breaks in one hit.","Lento y enorme, con una coraza que aguanta mucho daño.":"Slow and huge, with a shell that soaks up damage.","Se mantiene a distancia y te lanza toxinas.":"Keeps its distance and hurls toxins at you.","Corre hacia ti y explota al contacto.":"Runs at you and explodes on contact.","Mini jefe de la oleada 5. Dispara toxinas e invoca esbirros.":"Wave 5 mini boss. Shoots toxins and summons minions.","Jefe final de la oleada 10. Ráfagas de proyectiles y mucha furia.":"Wave 10 final boss. Projectile bursts and lots of rage.","Avatar":"Avatar","Color":"Color","Partidas":"Games","Eliminaciones":"Kills","Mejor puntuación":"Best score","Mejor oleada (infinito)":"Best wave (endless)","Jefes derrotados":"Bosses defeated"};
 let LANG='es';try{LANG=localStorage.getItem('abxl')||((navigator.language||'es').slice(0,2)==='es'?'es':'en')}catch(e){}
 const tr=s=>LANG==='en'&&EN[s]!==undefined?EN[s]:s;
 let M=["1111111111111111","1000000010000001","1011110010111101","1010000000100001","1010111110101011","1000100000001001","1110101111101101","1000001000000001","1011111011110111","1000000010000001","1011101010111101","1010001000000101","1010111111110101","1000000000000001","1011101111011101","1111111111111111"];
@@ -178,7 +203,7 @@ const gc=c.createLinearGradient(0,0,0,H/2);gc.addColorStop(0,'#1a0810');gc.addCo
 const gf=c.createLinearGradient(0,H/2,0,H);gf.addColorStop(0,'#0a0405');gf.addColorStop(1,'#3a1210');
 let px,py,pa,hp,foes,shots,cd,hurt,rec,state='menu',jx=0,jy=0,fire=false,total=0;
 const keys={};
-let pts=0,inv=0,hsfx=0,pool=[],wave=1,score=0,best=0,combo=0,ct=0,bn=0,nextW=false,own=[1,0,0],sks=[1,0,0,0,0],wp=0,sk=0,df=1,endless=0,dmgW=0,hpPrev=100,ARN=0,bsh=[],intro=null,np=1,mi=0,kills=0,mk=0,ld=0,sa=0,rpv={};
+let pts=0,inv=0,hsfx=0,pool=[],wave=1,score=0,best=0,combo=0,ct=0,bn=0,nextW=false,own=[1,0,0,0],sks=[1,0,0,0,0],wp=0,sk=0,df=1,endless=0,dmgW=0,hpPrev=100,ARN=0,bsh=[],intro=null,np=1,mi=0,kills=0,mk=0,ld=0,sa=0,rpv={};
 const rp={},net={on:false,host:false,id:0,hostId:0,pin:'',ps:[],ws:null,brk:false},SP=[[1.5,1.5],[2.5,1.5],[1.5,2.5],[3.5,1.5]];
 // [nombre, nº de bacterias, velocidad, daño recibido, puntos y score]
 const DF=[['Fácil',.7,.85,.7,.6],['Normal',1,1,1,1],['Difícil',1.35,1.15,1.3,1.6],['Pesadilla',1.8,1.3,1.7,2.5]];const up={fr:0,pw:0,hp:0,sp:0};
@@ -201,7 +226,10 @@ function reset(nw){
 }
 function shoot(){let a=pa,bd=.35;
  for(const f of foes){const r=Math.atan2(f.y-py,f.x-px);let d=r-pa;d=Math.atan2(Math.sin(d),Math.cos(d));if(Math.abs(d)<bd&&los(f)){bd=Math.abs(d);a=r}}
- const sh={x:px+Math.cos(a)*.3,y:py+Math.sin(a)*.3,dx:Math.cos(a),dy:Math.sin(a),z:wp,d:(1+up.pw)*WP[wp][2],k:sk};if(net.on&&!net.host)tx2({k:'f',s:sh},1);else shots.push(sh);cd=WP[wp][1]*(1-.15*up.fr);rec=1;sfx(wp==2?'cannon':'shoot')}
+ const np2=wp==3?6:1;for(let q=0;q<np2;q++){const aa=wp==3?a+(q-(np2-1)/2)*.1+(Math.random()-.5)*.05:a;
+ const sh={x:px+Math.cos(aa)*.3,y:py+Math.sin(aa)*.3,dx:Math.cos(aa),dy:Math.sin(aa),z:wp,d:(1+up.pw)*WP[wp][2],k:sk};if(wp==3){sh.v=10;sh.l=.65}
+ if(net.on&&!net.host)tx2({k:'f',s:sh},1);else shots.push(sh)}
+ cd=WP[wp][1]*(1-.15*up.fr);rec=1;sfx(wp==2?'cannon':wp==3?'shotgun':'shoot')}
 function update(dt){
  const ts=v=>Math.abs(v)<.3?0:Math.sign(v)*(Math.abs(v)-.3)/.7,dz=v=>Math.abs(v)<.15?0:v;
  const act=state==='play'?1:0,hostm=!net.on||net.host;
@@ -213,10 +241,10 @@ function update(dt){
  if(act&&(fire||keys.Space)&&cd<=0)shoot();
  if(!hostm){hurt=Math.max(0,hurt-dt*1.5);inv-=dt;hsfx-=dt;bn-=dt;if(hp<=0&&state==='play')ask();return}
  if(net.on)hostSnap(dt);
- for(let i=shots.length-1;i>=0;i--){const s=shots[i];s.x+=s.dx*8*dt;s.y+=s.dy*8*dt;
+ for(let i=shots.length-1;i>=0;i--){const s=shots[i];s.x+=s.dx*(s.v||8)*dt;s.y+=s.dy*(s.v||8)*dt;if(s.l!==undefined&&(s.l-=dt)<=0){shots.splice(i,1);continue}
   if(wall(s.x|0,s.y|0)){shots.splice(i,1);continue}
   for(const f of foes)if(Math.hypot(f.x-s.x,f.y-s.y)<(f.rad||.45)){f.hp-=s.d;f.fl=.15;sfx('hit');shots.splice(i,1);break}}
- const n0=foes.length,bd=foes.find(f=>f.bt&&f.hp<=.01),dead=foes.filter(f=>f.hp<=.01&&!f.bt);foes=foes.filter(f=>f.hp>.01);if(bd){foes=[];bsh=[];sfx('boss')}if(foes.length<n0){const k=n0-foes.length+(bd?(bd.bt==1?6:15):0)+Math.round(dead.reduce((a,f)=>a+[0,.5,2,1,1][f.ty|0],0));combo=Math.min(5,(ct>0?combo:0)+k);ct=2.5;pts+=Math.round(k*10*DF[df][4]);kills+=k;score+=Math.round(k*10*wave*combo*DF[df][4]);save();sfx('pop');achKill(dead)}ct-=dt;bn-=dt;
+ const n0=foes.length,bd=foes.find(f=>f.bt&&f.hp<=.01),dead=foes.filter(f=>f.hp<=.01&&!f.bt);foes=foes.filter(f=>f.hp>.01);if(bd){foes=[];bsh=[];sfx('boss')}if(foes.length<n0){const k=n0-foes.length+(bd?(bd.bt==1?6:15):0)+Math.round(dead.reduce((a,f)=>a+[0,.5,2,1,1][f.ty|0],0));combo=Math.min(5,(ct>0?combo:0)+k);ct=2.5;pts+=Math.round(k*10*DF[df][4]);kills+=k;score+=Math.round(k*10*wave*combo*DF[df][4]);save();sfx('pop');achKill(bd?dead.concat([bd]):dead)}ct-=dt;bn-=dt;
  const TG=[];if(state==='play'&&hp>0)TG.push({x:px,y:py,l:1});for(const id in rp)if(rp[id].st==1)TG.push({x:rp[id].x,y:rp[id].y,r:rp[id]});
  if(net.on&&!TG.length&&state!=='quiz'&&!Object.values(rp).some(r=>r.st==2)){netEnd(0);end(tr('Te han infectado'),tr('Las bacterias ganaron esta vez.'),tr('Jugar de nuevo'));return}
  TG.forEach(t=>t.F=bfs(t.x|0,t.y|0));
@@ -259,7 +287,7 @@ function render(){
  list.sort((a,b)=>b.ty-a.ty);
  for(const e of list){
   if(e.ty<.15)continue;
-  const sx=(W/2)*(1+e.tx/e.ty),sz=(H/e.ty)*(e.t==3?.3:e.t==2?.55:e.t?(e.o.z==2?.34:e.o.z==1?.12:.2):foeSize(e.o)),cy=H/2+(H/e.ty)*(e.t==2?.12:e.t==3?.02:e.t?.05:.53-foeSize(e.o)/2);
+  const sx=(W/2)*(1+e.tx/e.ty),sz=(H/e.ty)*(e.t==3?.3:e.t==2?.55:e.t?(e.o.z==2?.34:e.o.z==3?.09:e.o.z==1?.12:.2):foeSize(e.o)),cy=H/2+(H/e.ty)*(e.t==2?.12:e.t==3?.02:e.t?.05:.53-foeSize(e.o)/2);
   const k=1/(1+e.ty*e.ty*.08);
   for(let x=Math.max(0,Math.floor(sx-sz/2));x<=Math.min(W-1,Math.ceil(sx+sz/2));x++){
    if(e.ty>=zb[x])continue;
@@ -302,13 +330,14 @@ const ov=document.getElementById('ov'),ot=document.getElementById('ot'),op=docum
 const js=document.getElementById('js'),kn=document.getElementById('kn'),fb=document.getElementById('fb'),hpb=document.getElementById('hp'),cnt=document.getElementById('cnt');
 const shp=document.getElementById('shp'),qz=document.getElementById('qz'),qc=document.getElementById('qc'),qt=document.getElementById('qt'),qa=document.getElementById('qa'),qf=document.getElementById('qf'),qn=document.getElementById('qn'),sb=document.getElementById('sb'),mu=document.getElementById('mu');
 const wb=document.getElementById('wb');
-const WP=[['Jeringa',.4,1,0,'equilibrada'],['Ametralladora de cápsulas',.13,.4,150,'dispara muy rápido, poco daño'],['Cañón de vacunas',1.1,4,200,'mucho daño, dispara muy lento']];
+const WP=[['Jeringa',.4,1,0,'equilibrada'],['Ametralladora de cápsulas',.13,.4,150,'dispara muy rápido, poco daño'],['Cañón de vacunas',1.1,4,200,'mucho daño, dispara muy lento'],['Escopeta',.9,.5,250,'perdigones dispersos, corto alcance']];
 const SK=[['Clásico','#ffd23f','#ffffff',0],['Rubí','#ff4d6d','#ffd6de',60],['Esmeralda','#2ee59d','#d9fff0',60],['Océano','#4db8ff','#e0f3ff',80],['Dorado','#ffb700','#fff3b0',150]];
 function applySkin(){document.documentElement.style.setProperty('--ac',SK[sk][1])}
 function cycleWp(){let i=wp;do{i=(i+1)%WP.length}while(!own[i]);wp=i;cd=.15;save()}
 function drawGun(r,bx){c.fillStyle=wp==1?'#8a97a6':'#6b7480';
  if(wp==1){c.fillRect(bx-16,H-40+r,32,34);c.fillStyle=SK[sk][1];c.fillRect(bx-12,H-34+r,24,10);c.fillStyle='#cfd8e0';for(let i=-1;i<2;i++)c.fillRect(bx+i*9-2,H-58+r,4,20)}
- else{c.fillRect(bx-15,H-70+r,30,64);c.fillStyle=SK[sk][1];c.fillRect(bx-10,H-52+r,20,36);c.fillStyle='#cfd8e0';c.fillRect(bx-19,H-78+r,38,8)}}
+ else if(wp==2){c.fillRect(bx-15,H-70+r,30,64);c.fillStyle=SK[sk][1];c.fillRect(bx-10,H-52+r,20,36);c.fillStyle='#cfd8e0';c.fillRect(bx-19,H-78+r,38,8)}
+ else{c.fillStyle='#3b4452';c.fillRect(bx-14,H-76+r,12,70);c.fillRect(bx+2,H-76+r,12,70);c.fillStyle='#1b2028';c.fillRect(bx-14,H-76+r,12,5);c.fillRect(bx+2,H-76+r,12,5);c.fillStyle=SK[sk][1];c.fillRect(bx-14,H-46+r,28,6);c.fillStyle='#8b5a2b';c.fillRect(bx-18,H-34+r,36,26);c.fillStyle='#a8743a';c.fillRect(bx-18,H-34+r,36,5)}}
 applySkin();
 ob.onclick=()=>{startMusic();const n=nextW;nextW=false;reset(n)};sb.onclick=shopUI;
 const U=[['fr','Mitocondria',3,[40,80,120]],['pw','Lisosoma',2,[60,120]],['hp','Núcleo',3,[40,70,100]],['sp','Flagelo',3,[30,60,90]]];
@@ -325,6 +354,7 @@ function sfx(k){if(!ac||!mon)return;const t=ac.currentTime;
  if(k=='shoot')sw(wp==1?1200:900,wp==1?500:220,.12,'square',.1);
  else if(k=='cannon')sw(300,50,.3,'sawtooth',.2);
  else if(k=='boss'){sw(110,38,1.1,'sawtooth',.3);sw(220,70,1.3,'square',.12)}
+ else if(k=='shotgun'){sw(220,40,.28,'sawtooth',.26);sw(1000,120,.1,'square',.12)}
  else if(k=='shield'){tone(79,t,.1,'triangle',.18);tone(86,t+.08,.14,'triangle',.18);tone(91,t+.18,.25,'triangle',.18)}
  else if(k=='hit')sw(320,140,.08,'sawtooth',.1);
  else if(k=='pop'){sw(600,70,.25,'sawtooth',.16);sw(200,50,.3,'square',.1)}
@@ -473,7 +503,7 @@ function leaveNet(m){closeNet();nt.style.display='none';qz.style.display='none';
 function connect(silent){if(net.ws)return;let w;
  try{w=new WebSocket(srvUrl())}catch(e){if(!silent){net.err=1;netUI(tr('No se pudo conectar. Abre el juego desde tu servidor.'))}return}
  net.ws=w;
- w.onopen=()=>{net.was=true;wsend({t:'hi',code:myCode,name:myName()});if(fr.length)wsend({t:'pres',codes:fr.map(f=>f.c)});if(nt.style.display==='flex'&&!net.pin)netUI()};
+ w.onopen=()=>{net.was=true;wsend({t:'hi',code:myCode,name:myName(),pf:myPf()});if(fr.length)wsend({t:'pres',codes:fr.map(f=>f.c)});if(nt.style.display==='flex'&&!net.pin)netUI()};
  w.onmessage=e=>{try{netMsg(JSON.parse(e.data))}catch(x){}};
  w.onerror=()=>{if(nt.style.display==='flex'&&!net.pin){net.err=1;netUI(tr('No se pudo conectar a ')+srvUrl()+tr('. Comprueba que el servidor esté encendido y, si hace falta, escribe abajo su dirección (p. ej. mi-juego.up.railway.app) y pulsa Conectar.'))}};
  w.onclose=()=>{net.ws=null;pres={};if(net.on||net.pin)leaveNet(tr('Conexión perdida.'));if(net.was)setTimeout(()=>connect(true),8000)}}
@@ -485,10 +515,10 @@ function netUI(msg){nt.innerHTML='';const add=mkAdd(nt);
   add('p',msg||tr('Pon tu nombre y un PIN de 4 dígitos. Para unirte, el del grupo; para crear uno, el que quieras (vacío = aleatorio).'));
   const nm=add('input','');nm.placeholder=tr('Tu nombre');nm.maxLength=12;nm.value=LS('abxn');
   const i=add('input','');i.placeholder='PIN';i.maxLength=4;i.inputMode='numeric';i.value=PRE;
-  const go=t=>()=>{SS('abxn',nm.value.trim());wsend({t:'hi',code:myCode,name:nm.value.trim()});wsend({t,pin:i.value,name:nm.value.trim(),df,en:endless,pub:0})};
+  const go=t=>()=>{SS('abxn',nm.value.trim());wsend({t:'hi',code:myCode,name:nm.value.trim(),pf:myPf()});wsend({t,pin:i.value,name:nm.value.trim(),df,en:endless,pub:0,pf:myPf()})};
   add('button',tr('Crear grupo (máx. 4 jugadores)'),'pri').onclick=go('create');
   add('button',tr('Unirme con PIN')).onclick=go('join');
-  add('button',tr('Partida rápida (pública)')).onclick=()=>{SS('abxn',nm.value.trim());wsend({t:'hi',code:myCode,name:nm.value.trim()});wsend({t:'quick',name:nm.value.trim(),df,en:endless})};
+  add('button',tr('Partida rápida (pública)')).onclick=()=>{SS('abxn',nm.value.trim());wsend({t:'hi',code:myCode,name:nm.value.trim(),pf:myPf()});wsend({t:'quick',name:nm.value.trim(),df,en:endless,pf:myPf()})};
   add('button',tr('Ver partidas públicas')).onclick=()=>pubUI();
   const shS=net.err||LS('abxs')||(location.hostname||'').endsWith('github.io'),sv=add('input','');sv.style.display=shS?'':'none';sv.placeholder='Servidor (ej. mi-juego.up.railway.app)';sv.style.fontSize='14px';sv.value=LS('abxs');
   {const cb=add('button',tr('Conectar a este servidor'));cb.style.display=shS?'':'none';cb.onclick=()=>{SS('abxs',sv.value.trim());closeNet(1);openNet()}}
@@ -497,8 +527,11 @@ function netUI(msg){nt.innerHTML='';const add=mkAdd(nt);
   const u=joinUrl(),q=qrCanvas(u);if(q){q.style.cssText='width:170px;height:170px;image-rendering:pixelated;border-radius:10px';nt.appendChild(q)}
   const lk=add('p',u);lk.style.cssText='font-size:11px;word-break:break-all;max-width:320px;opacity:.75;user-select:text';
   add('p',tr('Jugadores: ')+net.ps.length+'/4');
-  net.ps.forEach((id,n)=>{const row=document.createElement('div'),p=document.createElement('p');row.style.cssText='display:flex;gap:10px;align-items:center;justify-content:center';
-   p.textContent=((net.ns||[])[n]||tr('Jugador ')+(n+1))+(id===net.hostId?tr(' (admin)'):'')+(id===net.id?' — '+tr('tú'):'');row.appendChild(p);
+  net.ps.forEach((id,n)=>{const row=document.createElement('div'),av=document.createElement('span'),tx=document.createElement('div'),h=document.createElement('b'),sm=document.createElement('small'),pf=(net.pfs||[])[n]||{av:0,col:0,lv:1};
+   row.style.cssText='display:flex;gap:10px;align-items:center;justify-content:center;padding:4px 10px;border-radius:14px;background:rgba(255,255,255,.05)';
+   av.innerHTML=avSvg(pf.av,pf.col,40);h.textContent=((net.ns||[])[n]||tr('Jugador ')+(n+1))+(id===net.hostId?tr(' (admin)'):'')+(id===net.id?' — '+tr('tú'):'');
+   let rk=RK[0][1];for(const[l,nm2]of RK)if(pf.lv>=l)rk=nm2;sm.textContent=tr('Nv ')+pf.lv+' - '+tr(rk);sm.style.opacity='.8';
+   tx.style.cssText='display:flex;flex-direction:column;align-items:flex-start;text-align:left';tx.appendChild(h);tx.appendChild(sm);row.appendChild(av);row.appendChild(tx);
    if(net.host&&id!==net.id){const k=document.createElement('button');k.textContent=tr('Expulsar');k.style.cssText='width:auto;padding:4px 12px;font-size:12px;border-color:#ff4d6d;color:#ff8aa0';k.onclick=()=>wsend({t:'kick',id});row.appendChild(k)}
    nt.appendChild(row)});
   const mt=tr('Modo: ')+tr(endless?'Infinito':'Normal (10 oleadas)'),vt=tr('Visibilidad: ')+tr(net.pub?'Pública (cualquiera puede entrar)':'Privada (solo con PIN)');
@@ -515,7 +548,7 @@ function netUI(msg){nt.innerHTML='';const add=mkAdd(nt);
 // ---- mensajes del servidor ----
 function netMsg(m){const t=m.t;
  if(t==='err')netUI(tr(ERR[m.m]||m.m));
- else if(t==='lobby'){net.id=m.you;net.hostId=m.host;net.host=m.host===m.you;net.pin=m.pin;net.ps=m.ps;net.ns=m.ns||[];
+ else if(t==='lobby'){net.id=m.you;net.hostId=m.host;net.host=m.host===m.you;net.pin=m.pin;net.ps=m.ps;net.ns=m.ns||[];net.pfs=m.pfs||[];
   net.pub=m.pub|0;if(!net.host){if(net.sdf==null){net.sdf=df;net.sen=endless}df=m.df|0;endless=m.en|0}
   frp.style.display='none';lbp.style.display='none';pub.style.display='none';clearInterval(pubT);chS='r';netUI()}
  else if(t==='start'){if(!net.host){df=m.df|0;endless=m.en|0}startOnline(m.ps,m.ns)}
@@ -526,7 +559,7 @@ function netMsg(m){const t=m.t;
  else if(t==='freq')toast(m.name+tr(' quiere ser tu amigo'),[[tr('Aceptar'),()=>{addFriend(m.from,m.name);wsend({t:'facc',to:m.from})}],[tr('Ignorar')]]);
  else if(t==='facc'){addFriend(m.from,m.name);toast(m.name+tr(' ahora es tu amigo'));if(frp.style.display==='flex')frUI()}
  else if(t==='ferr'){if(cp.style.display==='flex'&&chS==='d')chSys(tr(ERR[m.m]||m.m));else if(frp.style.display==='flex')frUI(tr(ERR[m.m]||m.m))}
- else if(t==='inv'){if(net.pin||net.on)return;toast(m.from+tr(' te invita a su grupo'),[[tr('Unirme'),()=>{frp.style.display='none';wsend({t:'join',pin:m.pin,name:LS('abxn').trim()})}],[tr('Ignorar')]])}
+ else if(t==='inv'){if(net.pin||net.on)return;toast(m.from+tr(' te invita a su grupo'),[[tr('Unirme'),()=>{frp.style.display='none';wsend({t:'join',pin:m.pin,name:LS('abxn').trim(),pf:myPf()})}],[tr('Ignorar')]])}
  else if(t==='chat')chAdd(m.s,m.n,m.x,m);
  else if(t==='kicked'){closeNet();netUI(tr('El admin te ha expulsado del grupo.'))}
  else if(t==='rooms')pubRender(m.a);
@@ -538,7 +571,7 @@ function startOnline(ps,ns){net.nm={};ps.forEach((id,i)=>{net.nm[id]=(ns&&ns[i])
 function onRelay(from,d){
  if(net.host){
   if(d.k==='p'){const r=rp[from]||(rp[from]={dm:0});Object.assign(r,{x:+d.x,y:+d.y,a:+d.a,st:d.st|0,iv:d.iv|0,sk:d.sk|0})}
-  else if(d.k==='f'&&d.s&&state!=='between')shots.push({x:+d.s.x,y:+d.s.y,dx:+d.s.dx,dy:+d.s.dy,z:d.s.z|0,d:Math.min(12,+d.s.d||1),k:d.s.k|0})}
+  else if(d.k==='f'&&d.s&&state!=='between')shots.push({x:+d.s.x,y:+d.s.y,dx:+d.s.dx,dy:+d.s.dy,z:d.s.z|0,d:Math.min(12,+d.s.d||1),k:d.s.k|0,v:Math.min(14,+d.s.v||8),l:d.s.l==null?undefined:Math.min(2,+d.s.l)})}
  else if(d.k==='s')onSnap(d);
  else if(d.k==='wd'){pts+=Math.round(25*DF[df][4]);save();sfx('win');if(state==='play')state='between';bkShow(d.t||20);achWave();if(state==='between')ask('bonus')}
  else if(d.k==='nw'){wave=d.w-1;reset(true)}
@@ -585,7 +618,7 @@ function frUI(msg){frp.innerHTML='';const add=mkAdd(frp);
 frb.onclick=()=>{connect(true);frUI();if(fr.length)wsend({t:'pres',codes:fr.map(f=>f.c)})};
 setInterval(()=>{if(fr.length&&net.ws&&net.ws.readyState===1)wsend({t:'pres',codes:fr.map(f=>f.c)})},6000);
 // ---- ranking ----
-function submitScore(){if(score<=0)return;try{fetch(httpBase()+'/score',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({n:myName(),s:score,w:wave,d:df,m:net.on?'coop':'solo',e:endless?1:0})}).catch(()=>{})}catch(e){}}
+function submitScore(){if(score<=0)return;try{fetch(httpBase()+'/score',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({n:myName(),s:score,w:wave,d:df,m:net.on?'coop':'solo',e:endless?1:0,p:myPf()})}).catch(()=>{})}catch(e){}}
 let lbE=0;
 function lbUI(){lbp.innerHTML='';const add=mkAdd(lbp);add('h2',tr('Ranking'));
  const tb=document.createElement('div');tb.style.cssText='display:flex;gap:8px;width:min(420px,100%)';lbp.appendChild(tb);
@@ -594,7 +627,10 @@ function lbUI(){lbp.innerHTML='';const add=mkAdd(lbp);add('h2',tr('Ranking'));
  const o=document.createElement('div');o.style.cssText='width:min(420px,100%);text-align:left';lbp.appendChild(o);
  add('button',tr('Cerrar'),'pri').onclick=()=>{lbp.style.display='none'};lbp.style.display='flex';
  fetch(httpBase()+'/scores?e='+lbE).then(r=>r.json()).then(a=>{st.textContent=a.length?tr('Mejores puntuaciones'):tr('Aún no hay puntuaciones. ¡Sé el primero!');
-  a.slice(0,15).forEach((e,i)=>{const d=document.createElement('div');d.textContent=(i+1)+'. '+e.n+' — '+e.s+' pts ('+tr('oleada ')+e.w+', '+tr((DF[e.d]||[''])[0])+', '+tr(e.m==='coop'?'cooperativo':'solo')+')';d.style.cssText='padding:4px 0;border-bottom:1px solid rgba(246,230,214,.15);font-size:14px';o.appendChild(d)})}).catch(()=>{st.textContent=tr('No se pudo cargar el ranking. Abre el juego desde tu servidor (o escribe su dirección en Jugar online).')})}
+  a.slice(0,15).forEach((e,i)=>{const d=document.createElement('div'),p=e.p||{av:0,col:0,lv:1},av=document.createElement('span'),tx=document.createElement('span');
+   d.style.cssText='display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(246,230,214,.15);font-size:14px';
+   av.innerHTML=avSvg(p.av,p.col,32);tx.textContent=(i+1)+'. '+e.n+' ('+tr('Nv ')+p.lv+') — '+e.s+' pts ('+tr('oleada ')+e.w+', '+tr((DF[e.d]||[''])[0])+', '+tr(e.m==='coop'?'cooperativo':'solo')+')';
+   d.appendChild(av);d.appendChild(tx);o.appendChild(d)})}).catch(()=>{st.textContent=tr('No se pudo cargar el ranking. Abre el juego desde tu servidor (o escribe su dirección en Jugar online).')})}
 rkb.onclick=lbUI;
 dfb.onclick=()=>{df=(df+1)%4;save();applyLang()};
 // ---- chat (global, grupo y privado) ----
@@ -721,10 +757,10 @@ const ACH=[
 ['team','Trabajo en equipo','Termina una partida cooperativa',()=>AS.coop>=1],
 ['friend','Buen compañero','Añade a un amigo',()=>AS.fr>=1],
 ['endless','Sin fin','Llega a la oleada 15 en modo infinito',()=>AS.endw>=15],
-['arsenal','Coleccionista','Consigue todas las armas',()=>own.every(Boolean)]];
+['arsenal','Coleccionista','Consigue todas las armas',()=>WP.every((w,i)=>own[i])]];
 function achSave(){SS('abxa',JSON.stringify({s:AS,u:AU}))}
 function achCheck(){for(const[id,nm,ds,f]of ACH)if(!AU[id]&&f()){AU[id]=Date.now();toast('★ '+tr('Logro desbloqueado')+': '+tr(nm));sfx('win')}achSave()}
-function achKill(dead){for(const f of dead){AS.kills++;AS.ty[f.ty|0]++}if(combo>=5)AS.combo5=1;achCheck()}
+function achKill(dead){for(const f of dead){AS.kills++;if(!f.bt)AS.ty[f.ty|0]++}if(combo>=5)AS.combo5=1;achCheck()}
 function achWave(){if(!dmgW)AS.clean++;if(ARN===1)AS.boss++;if(ARN===2)AS.final++;if(endless)AS.endw=Math.max(AS.endw,wave);achCheck()}
 function achEnd(win,coop){AS.games++;if(win&&!endless){AS.final++;if(df===3)AS.hard++}if(coop)AS.coop++;if(endless)AS.endw=Math.max(AS.endw,wave);achCheck()}
 function acUI(){acp.innerHTML='';const add=mkAdd(acp);add('h2',tr('Logros'));add('p',ACH.filter(a=>AU[a[0]]).length+' / '+ACH.length);
@@ -755,10 +791,90 @@ function pubUI(){pub.innerHTML='';const add=mkAdd(pub);add('h2',tr('Partidas pú
 function pubRender(a){const o=document.getElementById('publ'),st=document.getElementById('pubst');if(!o||pub.style.display!=='flex')return;
  o.innerHTML='';st.textContent=a.length?tr('Elige una partida para unirte'):tr('No hay partidas públicas ahora mismo. ¡Crea una desde "Jugar online"!');
  a.forEach(r=>{const b=document.createElement('button');b.className='up';b.style.display='block';
-  b.textContent=r.host+' — '+r.n+'/4 — '+tr(DF[r.df][0])+' — '+tr(r.en?'Infinito':'10 oleadas');
-  b.onclick=()=>{pub.style.display='none';clearInterval(pubT);wsend({t:'hi',code:myCode,name:LS('abxn').trim()});wsend({t:'join',pin:r.pin,name:LS('abxn').trim()})};o.appendChild(b)})}
+  const av=document.createElement('span');av.innerHTML=avSvg((r.pf||{}).av,(r.pf||{}).col,28);av.style.cssText='display:inline-block;vertical-align:middle;margin-right:8px';b.appendChild(av);b.appendChild(document.createTextNode(r.host+' — '+r.n+'/4 — '+tr(DF[r.df][0])+' — '+tr(r.en?'Infinito':'10 oleadas')));
+  b.onclick=()=>{pub.style.display='none';clearInterval(pubT);wsend({t:'hi',code:myCode,name:LS('abxn').trim(),pf:myPf()});wsend({t:'join',pin:r.pin,name:LS('abxn').trim(),pf:myPf()})};o.appendChild(b)})}
 const cfgSend=()=>wsend({t:'cfg',df,en:endless,pub:net.pub|0});
 applyLang();
+// ---- avatares, perfil, bestiario y pantalla de carga ----
+const pfp=document.getElementById('pfp'),bsp=document.getElementById('bsp'),pfb=document.getElementById('pfb'),bsb=document.getElementById('bsb');
+const AVS=[
+'<circle cx="20" cy="21" r="11" fill="#7fd08a" stroke="#2f7a3a" stroke-width="2"/><circle cx="16" cy="19" r="2" fill="#10202a"/><circle cx="24" cy="19" r="2" fill="#10202a"/>',
+'<ellipse cx="18" cy="21" rx="12" ry="8" fill="#f0b43a" stroke="#a8741a" stroke-width="2"/><path d="M30 21q3-6 6 0" fill="none" stroke="#a8741a" stroke-width="2"/><circle cx="14" cy="20" r="1.8" fill="#10202a"/>',
+'<circle cx="20" cy="20" r="12" fill="#6fa8e8" stroke="#1f4f8f" stroke-width="2"/><circle cx="20" cy="20" r="5" fill="#1f4f8f"/>',
+'<ellipse cx="20" cy="20" rx="13" ry="9" fill="#e8895a" stroke="#8a3b1c" stroke-width="2"/><path d="M9 20h5l2-6 3 12 3-12 3 12 2-6h4" fill="none" stroke="#8a3b1c" stroke-width="1.6"/>',
+'<circle cx="20" cy="20" r="12" fill="#b26be0" stroke="#5b2a80" stroke-width="2"/><circle cx="16" cy="17" r="2.4" fill="#5b2a80"/><circle cx="24" cy="23" r="2.4" fill="#5b2a80"/><circle cx="23" cy="15" r="1.5" fill="#5b2a80"/>',
+'<g transform="rotate(-35 20 20)"><rect x="6" y="14" width="28" height="12" rx="6" fill="#fff" stroke="#2a0b12" stroke-width="2"/><path d="M20 14H12a6 6 0 0 0 0 12h8z" fill="#ffd23f"/><path d="M20 14v12" stroke="#2a0b12" stroke-width="2"/></g>',
+'<g transform="rotate(-40 20 20)"><rect x="8" y="16" width="20" height="8" rx="2" fill="#cfe8ee" stroke="#4b5563" stroke-width="1.6"/><rect x="12" y="18" width="10" height="4" fill="#ffd23f"/><rect x="28" y="19" width="8" height="2" fill="#9ab"/><rect x="3" y="14" width="3" height="12" fill="#e8e8e8"/></g>',
+'<path d="M20 7l11 4v8c0 7-5 11-11 14C14 30 9 26 9 19v-8z" fill="#cfe8ff" stroke="#3b6fb0" stroke-width="2"/><path d="M20 13v14M13 19h14" stroke="#3b6fb0" stroke-width="2.5"/>'];
+function avSvg(av,col,sz){const c0=(SK[col|0]||SK[0])[1];
+ return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'"><circle cx="20" cy="20" r="18.5" fill="rgba(0,0,0,.45)" stroke="'+c0+'" stroke-width="2.5"/>'+(AVS[av|0]||AVS[0])+'</svg>'}
+let PF={av:0,col:0};try{PF=Object.assign(PF,JSON.parse(LS('abxp')||'{}'))}catch(e){}
+const savePf=()=>SS('abxp',JSON.stringify(PF));
+const RK=[[1,'Novato'],[3,'Practicante'],[6,'Médico'],[10,'Cirujano'],[15,'Doctor'],[20,'Leyenda']];
+function lvl(){const xp=AS.kills+AS.boss*30+AS.final*100+AS.games*10,lv=1+Math.floor(Math.sqrt(xp/10)),cur=(lv-1)**2*10,nxt=lv**2*10;let rk=RK[0][1];for(const[l,n]of RK)if(lv>=l)rk=n;return{xp,lv,rk,p:(xp-cur)/(nxt-cur)}}
+const myPf=()=>({av:PF.av,col:PF.col,lv:lvl().lv,ac:ACH.filter(a=>AU[a[0]]).length});
+const BEST=[[0,'Coco','★','La célula más común. Persigue sin descanso.'],[1,'Bacilo veloz','★★','Pequeño y rapidísimo, pero se rompe con un golpe.'],[2,'Estreptococo blindado','★★★','Lento y enorme, con una coraza que aguanta mucho daño.'],[3,'Escupidora','★★','Se mantiene a distancia y te lanza toxinas.'],[4,'Kamikaze','★★★','Corre hacia ti y explota al contacto.'],[5,'ESTAFILOCOCO REY','★★★★','Mini jefe de la oleada 5. Dispara toxinas e invoca esbirros.'],[6,'SUPERBACTERIA RESISTENTE','★★★★★','Jefe final de la oleada 10. Ráfagas de proyectiles y mucha furia.']];
+const bestCnt=i=>i<5?AS.ty[i]:i==5?AS.boss:AS.final;
+function bestSvg(i){const e=(x,y,r,col)=>'<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+col+'"/>',rg=a=>'rgb('+a[0]+','+a[1]+','+a[2]+')',dk=a=>'rgb('+(a[0]*.45|0)+','+(a[1]*.45|0)+','+(a[2]*.45|0)+')';let b='';
+ if(i<5){const p=FP[i];
+  if(i==1)b='<ellipse cx="22" cy="20" rx="15" ry="9" fill="'+rg(p)+'" stroke="'+dk(p)+'" stroke-width="2"/>'+e(15,18,2.2,'#1a0508')+e(22,18,2.2,'#1a0508')+'<path d="M37 20q3-6 7 0" fill="none" stroke="'+dk(p)+'" stroke-width="2"/>';
+  else{const r=i==2?16:13,ec=i==4?'#fff':'#1a0508';b='<circle cx="24" cy="20" r="'+r+'" fill="'+rg(p)+'" stroke="'+dk(p)+'" stroke-width="2"/>'+e(19,17,2.4,ec)+e(29,17,2.4,ec);
+   if(i==2)b+='<path d="M12 22h24M14 28h20" stroke="'+dk(p)+'" stroke-width="2"/>';
+   if(i==3)b+='<ellipse cx="24" cy="26" rx="4" ry="2.5" fill="#3a0a4a"/>';
+   if(i==4)b+='<path d="M24 3v5M38 8l-3 4M10 8l3 4" stroke="#ffd23f" stroke-width="2"/>'}}
+ else if(i==5)b='<path d="M24 1l3 6h-6zM41 8l-1 7-5-4zM7 8l1 7 5-4z" fill="rgb(110,140,30)"/><circle cx="24" cy="22" r="16" fill="rgb(196,206,64)" stroke="rgb(110,140,30)" stroke-width="2"/>'+e(18,19,3.5,'#fff')+e(30,19,3.5,'#fff')+e(18,19,1.6,'#1a0508')+e(30,19,1.6,'#1a0508');
+ else b='<path d="M24 0l4 7h-8zM43 7l-3 8-5-5zM5 7l3 8 5-5z" fill="rgb(110,12,40)"/><circle cx="24" cy="22" r="16" fill="rgb(210,36,58)" stroke="rgb(110,12,40)" stroke-width="2"/>'+e(15,19,3,'#ffe14d')+e(24,19,3,'#ffe14d')+e(33,19,3,'#ffe14d')+'<rect x="16" y="28" width="16" height="3" rx="1.5" fill="#2a0508"/>';
+ return '<svg viewBox="0 0 48 40" width="64" height="54">'+b+'</svg>'}
+function bsUI(){bsp.innerHTML='';const add=mkAdd(bsp);add('h2',tr('Bestiario'));
+ add('p',tr('Descubiertas: ')+BEST.filter(b=>bestCnt(b[0])>0).length+' / '+BEST.length);
+ const o=document.createElement('div');o.style.cssText='width:min(430px,100%);display:flex;flex-direction:column;gap:8px';bsp.appendChild(o);
+ BEST.forEach(([i,nm,st,ds])=>{const k=bestCnt(i),d=document.createElement('div'),sv=document.createElement('span'),tx=document.createElement('div'),h=document.createElement('b'),p=document.createElement('span');
+  d.className='ach'+(k>0?' on':'');d.style.cssText='flex-direction:row;align-items:center;gap:12px;text-align:left';
+  sv.innerHTML=bestSvg(i);sv.style.cssText='flex:none;display:block'+(k>0?'':';filter:brightness(0);opacity:.6');
+  h.textContent=k>0?tr(nm)+'  '+st:'???';p.textContent=k>0?tr(ds)+'  ('+tr('Eliminados: ')+k+')':tr('Derrótala para descubrirla.');
+  tx.style.cssText='display:flex;flex-direction:column;gap:2px';tx.appendChild(h);tx.appendChild(p);d.appendChild(sv);d.appendChild(tx);o.appendChild(d)});
+ add('button',tr('Cerrar'),'pri').onclick=()=>{bsp.style.display='none'};bsp.style.display='flex'}
+bsb.onclick=bsUI;
+function pfUI(){pfp.innerHTML='';const add=mkAdd(pfp),L=lvl();add('h2',tr('Perfil'));
+ const top=document.createElement('div');top.style.cssText='display:flex;align-items:center;gap:14px';pfp.appendChild(top);
+ const big=document.createElement('span');big.innerHTML=avSvg(PF.av,PF.col,84);top.appendChild(big);
+ const info=document.createElement('div');info.style.textAlign='left';top.appendChild(info);
+ const nm=document.createElement('input');nm.maxLength=12;nm.placeholder=tr('Tu nombre');nm.value=LS('abxn');nm.style.width='170px';nm.oninput=()=>SS('abxn',nm.value.trim());info.appendChild(nm);
+ const rk=document.createElement('div');rk.textContent=tr('Nv ')+L.lv+' - '+tr(L.rk);rk.style.cssText='margin-top:6px;color:#ffd23f;font-weight:700';info.appendChild(rk);
+ const xb=document.createElement('div'),xf=document.createElement('div');xb.style.cssText='height:8px;border-radius:5px;background:#1a0509;border:1px solid #ffd23f;margin-top:6px;overflow:hidden';xf.style.cssText='height:100%;background:linear-gradient(90deg,#2ee59d,#4db8ff);width:'+Math.round(L.p*100)+'%';xb.appendChild(xf);info.appendChild(xb);
+ add('p',tr('Avatar'));
+ const g=document.createElement('div');g.style.cssText='display:grid;grid-template-columns:repeat(4,56px);gap:8px;justify-content:center';pfp.appendChild(g);
+ AVS.forEach((_,i)=>{const b=document.createElement('button');b.innerHTML=avSvg(i,PF.col,44);b.style.cssText='width:56px;height:56px;padding:4px;border-radius:50%;border-color:'+(i===PF.av?'#ffd23f':'rgba(246,230,214,.3)');b.onclick=()=>{PF.av=i;savePf();sendHi();pfUI()};g.appendChild(b)});
+ add('p',tr('Color'));
+ const cr=document.createElement('div');cr.style.cssText='display:flex;gap:10px;justify-content:center';pfp.appendChild(cr);
+ SK.forEach((s,i)=>{const b=document.createElement('button');b.style.cssText='width:34px;height:34px;padding:0;border-radius:50%;background:'+s[1]+';border:3px solid '+(i===PF.col?'#fff':'rgba(0,0,0,.4)');b.onclick=()=>{PF.col=i;savePf();sendHi();pfUI()};cr.appendChild(b)});
+ const st=[[tr('Partidas'),AS.games],[tr('Eliminaciones'),AS.kills],[tr('Mejor puntuación'),best],[tr('Mejor oleada (infinito)'),AS.endw],[tr('Logros'),ACH.filter(a=>AU[a[0]]).length+' / '+ACH.length],[tr('Bestiario'),BEST.filter(b=>bestCnt(b[0])>0).length+' / '+BEST.length],[tr('Jefes derrotados'),AS.boss+AS.final]];
+ const sg=document.createElement('div');sg.style.cssText='width:min(380px,100%);display:grid;grid-template-columns:1fr 1fr;gap:6px';pfp.appendChild(sg);
+ st.forEach(([k,v])=>{const d=document.createElement('div');d.className='ach on';d.style.cssText='padding:6px 10px;opacity:1';const a=document.createElement('span'),b=document.createElement('b');a.textContent=k;b.textContent=v;d.appendChild(a);d.appendChild(b);sg.appendChild(d)});
+ add('button',tr('Cerrar'),'pri').onclick=()=>{pfp.style.display='none'};pfp.style.display='flex'}
+pfb.onclick=pfUI;
+const sendHi=()=>wsend({t:'hi',code:myCode,name:myName(),pf:myPf()});
+// ---- pantalla de carga con imágenes reales del juego ----
+function loadSeq(){const ld=document.getElementById('ld');if(!ld)return;
+ const ldp=document.getElementById('ldp'),ldm=document.getElementById('ldm'),bgs=[...document.querySelectorAll('#ldbg i')];
+ const sv={wp,M,ARN,foes,px,py,pa};
+ const snap=()=>{state='play';inv=0;bn=0;hurt=0;rec=0;shots=shots||[];intro=null;render();const o=document.createElement('canvas');o.width=W;o.height=H;o.getContext('2d').drawImage(cv,0,0);return o.toDataURL('image/jpeg',.85)};
+ const restore=()=>{wp=sv.wp;M=sv.M;ARN=sv.ARN;foes=sv.foes;px=sv.px;py=sv.py;pa=sv.pa;shots=[];bsh=[];intro=null;state='menu'};
+ const arena=(a,x,y)=>{M=ARENA;ARN=a;px=x;py=y;pa=-1.5708;shots=[];bsh=[]};
+ const pellets=n=>{shots=[];for(let i=0;i<n;i++){const a=pa+(i-(n-1)/2)*.12,d=2.2+(i%3)*.5;shots.push({x:px+Math.cos(a)*d,y:py+Math.sin(a)*d,z:3,k:0})}};
+ const scenes=[
+  ['Dibujando el laberinto…',()=>{M=MAZE;ARN=0;px=1.5;py=1.5;pa=0;wp=0;shots=[];bsh=[];foes=[mkFoe(3.7,1.5,0),mkFoe(5.3,1.6,1),mkFoe(6.5,1.4,3)]}],
+  ['Despertando al Estafilococo Rey…',()=>{arena(1,12,19.5);wp=1;const b=makeBoss();b.y=11;foes=[b];bsh=[{x:11.4,y:14,bt:1},{x:12.7,y:15.5,bt:1}]}],
+  ['Cargando la Superbacteria…',()=>{arena(2,12,19.5);wp=3;const b=makeBoss();b.y=12;foes=[b];[10.4,11.2,12,12.8,13.6].forEach((x,i)=>bsh.push({x,y:15.2+Math.abs(i-2)*.3,bt:2}))}],
+  ['Reuniendo a las células…',()=>{arena(1,12,20.5);wp=2;foes=[mkFoe(10.4,15,1),mkFoe(12,14,2),mkFoe(13.6,15.5,3),mkFoe(11.3,16.6,4),mkFoe(14.6,16,0)]}],
+  ['Cargando la escopeta…',()=>{arena(2,12,20.5);wp=3;foes=[mkFoe(11,14.5,0),mkFoe(13,13.5,4),mkFoe(12,15.5,1)];pellets(7)}]];
+ const steps=[['Cultivando bacterias…',null],...scenes,['¡Listo!',null]];let i=0,k=-1;
+ const done=()=>{restore();reset(false);wp=sv.wp;state='menu';ov.style.display='flex';ld.classList.add('out');setTimeout(()=>ld.remove(),900)};
+ const tick=()=>{const[msg,fn]=steps[i];
+  if(fn){try{fn();const u=snap();k++;const b=bgs[k];if(b){b.style.backgroundImage='url('+u+')';bgs.forEach(x=>x.classList.remove('on'));b.classList.add('on')}}catch(e){}restore()}
+  const p=Math.round((i+1)/steps.length*100);ldp.style.width=p+'%';ldm.textContent=tr(msg)+'   '+p+'%';
+  i++;if(i<steps.length)setTimeout(tick,i==steps.length-1?520:440);else setTimeout(done,480)};
+ setTimeout(tick,200)}
 let lt=0,ltT=null;
 document.addEventListener('touchend',e=>{const n=Date.now();if(n-lt<350&&e.target===ltT&&e.target.tagName!=='INPUT')e.preventDefault();lt=n;ltT=e.target},{passive:false});
 ['gesturestart','gesturechange','dblclick'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
@@ -792,6 +908,7 @@ function bgDraw(){if(ov.style.display==='none')return;
  bgPills.forEach(p=>{p.x=(p.x+p.s*.033*Math.cos(p.a)+1)%1;p.y=(p.y+p.s*.033*Math.sin(p.a)+1)%1;bx.save();bx.translate(p.x*w,p.y*h);bx.rotate(p.a+T*.6);bx.fillStyle='rgba(255,210,63,.55)';bx.fillRect(-14,-6,14,12);bx.fillStyle='rgba(255,255,255,.55)';bx.fillRect(0,-6,14,12);bx.restore()})}
 if(!(typeof matchMedia!=='undefined'&&matchMedia('(prefers-reduced-motion: reduce)').matches))setInterval(bgDraw,33);else bgDraw();
 reset();state='menu';ov.style.display='flex';
+loadSeq();
 requestAnimationFrame(loop);
 </script>
 </body>
