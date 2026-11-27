@@ -43,7 +43,7 @@ const server = http.createServer((req, res) => {
         const s = Math.floor(Number(o.s)), w = Math.floor(Number(o.w)), d = Math.floor(Number(o.d));
         const e = o.e ? 1 : 0;
         if (!(s > 0 && s <= 5e7 && w >= 1 && w <= 500 && d >= 0 && d <= 3 && (e || w <= 10))) throw new Error('bad');
-        scores.push({ n: cleanName(o.n, 'Jugador'), s, w, d, e, m: o.m === 'coop' ? 'coop' : 'solo', t: Date.now() });
+        scores.push({ n: cleanName(o.n, 'Jugador'), s, w, d, e, m: o.m === 'coop' ? 'coop' : 'solo', p: cleanPf(o.p), t: Date.now() });
         scores.sort((a, b) => b.s - a.s);
         scores = scores.slice(0, 200);
         saveScores();
@@ -69,12 +69,18 @@ let nextId = 1;
 const send = (ws, o) => { if (ws.readyState === 1) ws.send(JSON.stringify(o)); };
 const clampDf = (v) => (v == null ? 1 : Math.min(3, Math.max(0, v | 0)));
 const flag = (v) => (v ? 1 : 0);
+const clampInt = (v, a, b) => Math.min(b, Math.max(a, Number(v) | 0));
+// perfil público: avatar, color, nivel y nº de logros (solo números acotados)
+const cleanPf = (p) => (p && typeof p === 'object'
+  ? { av: clampInt(p.av, 0, 7), col: clampInt(p.col, 0, 4), lv: clampInt(p.lv || 1, 1, 999), ac: clampInt(p.ac, 0, 60) }
+  : { av: 0, col: 0, lv: 1, ac: 0 });
 
 function sendLobby(room) {
   const ps = room.members.map((m) => m.id);
   const ns = room.members.map((m) => m.name);
+  const pfs = room.members.map((m) => m.pf);
   room.members.forEach((m) =>
-    send(m.ws, { t: 'lobby', pin: room.pin, host: room.members[0].id, you: m.id, ps, ns, df: room.df, en: room.en, pub: room.pub }));
+    send(m.ws, { t: 'lobby', pin: room.pin, host: room.members[0].id, you: m.id, ps, ns, pfs, df: room.df, en: room.en, pub: room.pub }));
 }
 
 function newPin() {
@@ -122,7 +128,7 @@ const openPublic = () =>
   Object.values(rooms).filter((r) => r.pub && !r.started && r.members.length < MAX);
 
 wss.on('connection', (ws) => {
-  const me = { id: nextId++, ws, room: null, name: 'Jugador', code: '', lc: 0 };
+  const me = { id: nextId++, ws, room: null, name: 'Jugador', code: '', lc: 0, pf: cleanPf() };
   ws.isAlive = true;
   ws.on('pong', () => { ws.isAlive = true; });
 
@@ -130,6 +136,7 @@ wss.on('connection', (ws) => {
     let m;
     try { m = JSON.parse(raw.toString()); } catch { return; }
     const room = me.room;
+    if (m.pf && (m.t === 'hi' || m.t === 'create' || m.t === 'join' || m.t === 'quick')) me.pf = cleanPf(m.pf);
 
     if (m.t === 'hi') {
       if (/^[A-Z2-9]{6}$/.test(String(m.code))) { me.code = m.code; byCode[me.code] = me; }
@@ -152,7 +159,7 @@ wss.on('connection', (ws) => {
     } else if (m.t === 'list') {
       send(ws, {
         t: 'rooms',
-        a: openPublic().map((r) => ({ pin: r.pin, n: r.members.length, host: r.members[0].name, df: r.df, en: r.en })),
+        a: openPublic().map((r) => ({ pin: r.pin, n: r.members.length, host: r.members[0].name, pf: r.members[0].pf, df: r.df, en: r.en })),
       });
     } else if (room && m.t === 'cfg' && room.members[0] === me && !room.started) {
       room.df = clampDf(m.df);
